@@ -1,6 +1,11 @@
 import { create } from 'zustand';
 
-import type { TaskPriority, TaskStatus } from '@/features/task-manager/types';
+import type {
+  TaskPriority,
+  TaskStatus,
+  ViewMode,
+  RetentionPolicy,
+} from '@/features/task-manager/types';
 
 interface TaskUIState {
   statusFilter: TaskStatus | 'all';
@@ -12,6 +17,9 @@ interface TaskUIState {
   selectedTaskId: string | null;
 
   isDarkMode: boolean;
+  viewMode: ViewMode;
+  retentionPolicy: RetentionPolicy;
+  showArchived: boolean;
 
   setStatusFilter: (status: TaskStatus | 'all') => void;
   setPriorityFilter: (priority: TaskPriority | 'all') => void;
@@ -22,6 +30,9 @@ interface TaskUIState {
   closeEditModal: () => void;
   resetFilters: () => void;
   toggleDarkMode: () => void;
+  setViewMode: (mode: ViewMode) => void;
+  setRetentionPolicy: (policy: RetentionPolicy) => void;
+  toggleShowArchived: () => void;
 }
 
 const initialFilters = {
@@ -43,6 +54,35 @@ function getInitialDarkMode(): boolean {
   }
 }
 
+function getInitialViewMode(): ViewMode {
+  try {
+    const stored = localStorage.getItem('task-manager-view-mode');
+    if (stored === 'list' || stored === 'board') {
+      return stored;
+    }
+    return 'list';
+  } catch {
+    return 'list';
+  }
+}
+
+function getInitialRetentionPolicy(): RetentionPolicy {
+  try {
+    const stored = localStorage.getItem('task-manager-retention-policy');
+    if (
+      stored === '5d' ||
+      stored === '7d' ||
+      stored === '30d' ||
+      stored === 'never'
+    ) {
+      return stored;
+    }
+    return 'never';
+  } catch {
+    return 'never';
+  }
+}
+
 export const useTaskUIStore = create<TaskUIState>((set) => ({
   ...initialFilters,
 
@@ -51,6 +91,9 @@ export const useTaskUIStore = create<TaskUIState>((set) => ({
   selectedTaskId: null,
 
   isDarkMode: getInitialDarkMode(),
+  viewMode: getInitialViewMode(),
+  retentionPolicy: getInitialRetentionPolicy(),
+  showArchived: false,
 
   setStatusFilter: (status) => set({ statusFilter: status }),
   setPriorityFilter: (priority) => set({ priorityFilter: priority }),
@@ -76,4 +119,24 @@ export const useTaskUIStore = create<TaskUIState>((set) => ({
       }
       return { isDarkMode: next };
     }),
+  setViewMode: (mode) =>
+    set(() => {
+      try {
+        localStorage.setItem('task-manager-view-mode', mode);
+      } catch {
+        // ignore
+      }
+      return { viewMode: mode };
+    }),
+  setRetentionPolicy: (policy) =>
+    set(() => {
+      try {
+        localStorage.setItem('task-manager-retention-policy', policy);
+      } catch {
+        // ignore
+      }
+      return { retentionPolicy: policy };
+    }),
+  toggleShowArchived: () =>
+    set((state) => ({ showArchived: !state.showArchived })),
 }));

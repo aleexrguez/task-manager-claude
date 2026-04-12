@@ -1,8 +1,9 @@
 import { useMemo } from 'react';
 import { useTasks } from '../hooks/use-tasks';
+import { useAutoPurge } from '../hooks/use-auto-purge';
 import { useTaskUIStore } from '../store/task-ui.store';
 import { getTaskStats } from '../utils/task.utils';
-import { TaskStats } from '../components';
+import { TaskStats, ViewToggle, RetentionConfig } from '../components';
 import { TaskListContainer } from './TaskListContainer';
 import { CreateTaskContainer } from './CreateTaskContainer';
 import { EditTaskContainer } from './EditTaskContainer';
@@ -12,9 +13,15 @@ export function TaskDashboardContainer() {
   const openCreateModal = useTaskUIStore((s) => s.openCreateModal);
   const isDarkMode = useTaskUIStore((s) => s.isDarkMode);
   const toggleDarkMode = useTaskUIStore((s) => s.toggleDarkMode);
+  const viewMode = useTaskUIStore((s) => s.viewMode);
+  const setViewMode = useTaskUIStore((s) => s.setViewMode);
+  const retentionPolicy = useTaskUIStore((s) => s.retentionPolicy);
+  const setRetentionPolicy = useTaskUIStore((s) => s.setRetentionPolicy);
 
   const stats = useMemo(() => getTaskStats(data?.tasks ?? []), [data]);
   const totalTasks = data?.tasks?.length ?? 0;
+
+  useAutoPurge(data?.tasks ?? []);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -31,6 +38,11 @@ export function TaskDashboardContainer() {
             </p>
           </div>
           <div className="flex items-center gap-3">
+            <ViewToggle viewMode={viewMode} onViewModeChange={setViewMode} />
+            <RetentionConfig
+              retentionPolicy={retentionPolicy}
+              onRetentionChange={setRetentionPolicy}
+            />
             <button
               type="button"
               onClick={toggleDarkMode}

@@ -50,6 +50,9 @@ export async function createTask(input: CreateTaskInput): Promise<Task> {
     status: input.status ?? 'todo',
     priority: input.priority ?? 'medium',
     assignee: input.assignee,
+    dueDate: input.dueDate,
+    completedAt: undefined,
+    isArchived: false,
     createdAt: now,
     updatedAt: now,
   };
@@ -67,14 +70,72 @@ export async function updateTask(
   if (index === -1) {
     throw new Error(`Task not found: ${id}`);
   }
+
+  const existing = store[index];
+  const now = new Date().toISOString();
+
+  let completedAt = existing.completedAt;
+  let isArchived = existing.isArchived;
+
+  if (input.status === 'done' && existing.status !== 'done') {
+    completedAt = now;
+  }
+  if (input.status && input.status !== 'done' && existing.status === 'done') {
+    completedAt = undefined;
+    isArchived = false;
+  }
+
   const updated: Task = {
-    ...store[index],
+    ...existing,
     ...input,
-    updatedAt: new Date().toISOString(),
+    completedAt,
+    isArchived,
+    updatedAt: now,
   };
+
   store = [...store.slice(0, index), updated, ...store.slice(index + 1)];
   persist(store);
   return { ...updated };
+}
+
+export async function archiveTask(id: string): Promise<Task> {
+  await delay();
+  const index = store.findIndex((t) => t.id === id);
+  if (index === -1) throw new Error(`Task not found: ${id}`);
+  if (store[index].status !== 'done')
+    throw new Error('Only done tasks can be archived');
+
+  const updated: Task = {
+    ...store[index],
+    isArchived: true,
+    updatedAt: new Date().toISOString(),
+  };
+
+  store = [...store.slice(0, index), updated, ...store.slice(index + 1)];
+  persist(store);
+  return { ...updated };
+}
+
+export async function unarchiveTask(id: string): Promise<Task> {
+  await delay();
+  const index = store.findIndex((t) => t.id === id);
+  if (index === -1) throw new Error(`Task not found: ${id}`);
+
+  const updated: Task = {
+    ...store[index],
+    isArchived: false,
+    updatedAt: new Date().toISOString(),
+  };
+
+  store = [...store.slice(0, index), updated, ...store.slice(index + 1)];
+  persist(store);
+  return { ...updated };
+}
+
+export async function purgeTasks(taskIds: string[]): Promise<void> {
+  await delay();
+  store = store.filter((t) => !taskIds.includes(t.id));
+  persist(store);
 }
 
 export async function deleteTask(id: string): Promise<void> {

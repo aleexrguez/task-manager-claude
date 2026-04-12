@@ -110,7 +110,20 @@ GREEN phase only.
 
 ---
 
-### 5. Security Audit
+### 5. Commit (MANDATORY)
+
+After a feature is completed:
+
+1. Ensure tests pass (GREEN)
+2. Run:
+   - npx tsc --noEmit
+   - npm run lint
+   - npm run test
+3. Create a clean, atomic commit
+4. Push changes to origin
+
+
+### 6. Security Audit
 Use `security-auditor`:
 
 - validate inputs (Zod)
@@ -119,12 +132,37 @@ Use `security-auditor`:
 
 ---
 
-### 6. Accessibility Audit
+### 7. Accessibility Audit
 Use `accessibility-auditor`:
 
 - semantic HTML
 - keyboard navigation
 - ARIA where needed
+
+---
+
+## Git Workflow (MANDATORY)
+
+Version control is part of the development process, not an afterthought.
+
+### Rules
+
+- Every completed feature or meaningful change MUST be committed
+- Commits must be **small, atomic, and reversible**
+- Do NOT accumulate large uncommitted changes
+- Push regularly to origin
+
+---
+
+### Commit Message Standard (Conventional Commits)
+
+Use clear, professional commit messages:
+
+- feat: add task detail page with routing and TDD
+- fix: resolve accessibility issues in modal focus handling
+- refactor: improve task filtering logic
+- test: add integration tests for task mutations
+- chore: setup eslint and prettier config
 
 ---
 
@@ -147,6 +185,7 @@ Use `accessibility-auditor`:
 - No mixing domain and API logic
 - No global state for server data
 - No "quick hacks" in main branches
+- Every feature must be committed before starting a new one
 
 ---
 

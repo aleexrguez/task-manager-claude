@@ -1,12 +1,14 @@
 import type { Task } from '../types';
 import { StatusBadge } from './StatusBadge';
 import { PriorityIndicator } from './PriorityIndicator';
+import { DueDateDisplay } from './DueDateDisplay';
 
 interface TaskCardProps {
   task: Task;
   onEdit?: (id: string) => void;
   onDelete?: (id: string) => void;
   onClick?: (id: string) => void;
+  onArchive?: (id: string) => void;
   isDeleting?: boolean;
 }
 
@@ -15,6 +17,7 @@ export function TaskCard({
   onEdit,
   onDelete,
   onClick,
+  onArchive,
   isDeleting = false,
 }: TaskCardProps) {
   const formattedDate = new Date(task.createdAt).toLocaleDateString();
@@ -65,6 +68,17 @@ export function TaskCard({
               {isDeleting ? '...' : 'Delete'}
             </button>
           )}
+          {task.status === 'done' && onArchive && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onArchive(task.id);
+              }}
+              className="rounded-md px-2 py-1 text-xs font-medium text-gray-600 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:text-gray-400 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
+            >
+              {task.isArchived ? 'Unarchive' : 'Archive'}
+            </button>
+          )}
         </div>
       </div>
 
@@ -89,6 +103,18 @@ export function TaskCard({
         )}
         <span className="shrink-0">{formattedDate}</span>
       </div>
+      {task.dueDate && (
+        <div className="mt-2 text-xs text-gray-400 dark:text-gray-500">
+          <span className="font-medium">Due:</span>{' '}
+          <DueDateDisplay dueDate={task.dueDate} status={task.status} />
+        </div>
+      )}
+      {task.status === 'done' && task.completedAt && (
+        <div className="mt-1 text-xs text-gray-400 dark:text-gray-500">
+          <span className="font-medium">Completed</span>{' '}
+          {new Date(task.completedAt).toLocaleString()}
+        </div>
+      )}
     </div>
   );
 }

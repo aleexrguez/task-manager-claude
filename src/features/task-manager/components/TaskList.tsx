@@ -6,6 +6,7 @@ interface TaskListProps {
   onEdit?: (id: string) => void;
   onDelete?: (id: string) => void;
   onClick?: (id: string) => void;
+  onArchive?: (id: string) => void;
   isLoading?: boolean;
   deletingId?: string | null;
   emptyMessage?: string;
@@ -17,6 +18,7 @@ export function TaskList({
   onEdit,
   onDelete,
   onClick,
+  onArchive,
   isLoading = false,
   deletingId = null,
   emptyMessage = 'No tasks yet',
@@ -82,6 +84,7 @@ export function TaskList({
           onEdit={onEdit}
           onDelete={onDelete}
           onClick={onClick}
+          onArchive={onArchive}
           isDeleting={deletingId === task.id}
         />
       ))}

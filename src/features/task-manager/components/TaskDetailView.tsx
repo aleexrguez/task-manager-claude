@@ -1,6 +1,7 @@
 import type { Task } from '../types';
 import { PriorityIndicator } from './PriorityIndicator';
 import { StatusBadge } from './StatusBadge';
+import { DueDateDisplay } from './DueDateDisplay';
 
 interface TaskDetailViewProps {
   task: Task;
@@ -82,6 +83,26 @@ export function TaskDetailView({
               {updatedDate}
             </p>
           </div>
+          {task.dueDate && (
+            <div>
+              <span className="font-medium text-gray-500 dark:text-gray-400">
+                Due Date
+              </span>
+              <p className="mt-1 text-gray-900 dark:text-gray-100">
+                <DueDateDisplay dueDate={task.dueDate} status={task.status} />
+              </p>
+            </div>
+          )}
+          {task.status === 'done' && task.completedAt && (
+            <div>
+              <span className="font-medium text-gray-500 dark:text-gray-400">
+                Completed
+              </span>
+              <p className="mt-1 text-gray-900 dark:text-gray-100">
+                {new Date(task.completedAt).toLocaleString()}
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>

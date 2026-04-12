@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import type { Task } from '../../types';
 import { TaskCard } from '../TaskCard';
 
@@ -62,5 +62,108 @@ describe('TaskCard', () => {
     await expect(
       user.click(screen.getByText('Fix login bug')),
     ).resolves.not.toThrow();
+  });
+});
+
+describe('TaskCard — Block 1 features', () => {
+  const baseTask: Task = {
+    id: 'task-block1-001',
+    title: 'Block 1 Test Task',
+    status: 'in-progress',
+    priority: 'medium',
+    isArchived: false,
+    createdAt: '2026-04-01T10:00:00.000Z',
+    updatedAt: '2026-04-01T10:00:00.000Z',
+  };
+
+  it('renders dueDate when task has a dueDate', () => {
+    const task: Task = { ...baseTask, dueDate: '2026-05-15' };
+
+    render(<TaskCard task={task} />);
+
+    expect(screen.getByText(/2026-05-15/)).toBeInTheDocument();
+  });
+
+  it('does not render due date section when task has no dueDate', () => {
+    render(<TaskCard task={baseTask} />);
+
+    expect(screen.queryByText(/2026-05-15/)).not.toBeInTheDocument();
+  });
+
+  it('renders completedAt for done tasks', () => {
+    const task: Task = {
+      ...baseTask,
+      status: 'done',
+      completedAt: '2026-04-10T14:30:00.000Z',
+    };
+
+    render(<TaskCard task={task} />);
+
+    expect(screen.getByText(/Completed/)).toBeInTheDocument();
+  });
+
+  it('does not render completedAt for non-done tasks', () => {
+    const task: Task = { ...baseTask, status: 'todo' };
+
+    render(<TaskCard task={task} />);
+
+    expect(screen.queryByText(/Completed/)).not.toBeInTheDocument();
+  });
+
+  it('renders Archive button for done tasks when onArchive is provided', () => {
+    const task: Task = { ...baseTask, status: 'done', isArchived: false };
+
+    render(<TaskCard task={task} onArchive={vi.fn()} />);
+
+    expect(
+      screen.getByRole('button', { name: /archive/i }),
+    ).toBeInTheDocument();
+  });
+
+  it('renders Unarchive button for archived done tasks', () => {
+    const task: Task = { ...baseTask, status: 'done', isArchived: true };
+
+    render(<TaskCard task={task} onArchive={vi.fn()} />);
+
+    expect(
+      screen.getByRole('button', { name: /unarchive/i }),
+    ).toBeInTheDocument();
+  });
+
+  it('does NOT render Archive button for non-done tasks', () => {
+    const task: Task = { ...baseTask, status: 'todo', isArchived: false };
+
+    render(<TaskCard task={task} onArchive={vi.fn()} />);
+
+    expect(
+      screen.queryByRole('button', { name: /archive/i }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('calls onArchive with task id when Archive button is clicked', async () => {
+    const user = userEvent.setup();
+    const onArchive = vi.fn();
+    const task: Task = { ...baseTask, status: 'done', isArchived: false };
+
+    render(<TaskCard task={task} onArchive={onArchive} />);
+
+    await user.click(screen.getByRole('button', { name: /archive/i }));
+
+    expect(onArchive).toHaveBeenCalledOnce();
+    expect(onArchive).toHaveBeenCalledWith('task-block1-001');
+  });
+
+  it('Archive button click does not trigger onClick', async () => {
+    const user = userEvent.setup();
+    const onArchive = vi.fn();
+    const onClick = vi.fn();
+    const task: Task = { ...baseTask, status: 'done', isArchived: false };
+
+    render(<TaskCard task={task} onArchive={onArchive} onClick={onClick} />);
+
+    await user.click(screen.getByRole('button', { name: /archive/i }));
+
+    expect(onArchive).toHaveBeenCalledOnce();
+    expect(onClick).not.toHaveBeenCalled();
   });
 });

@@ -15,6 +15,7 @@ interface FormState {
   status: TaskStatus;
   priority: TaskPriority;
   assignee: string;
+  dueDate: string;
 }
 
 function buildInitialState(initial?: Partial<CreateTaskInput>): FormState {
@@ -24,6 +25,7 @@ function buildInitialState(initial?: Partial<CreateTaskInput>): FormState {
     status: initial?.status ?? 'todo',
     priority: initial?.priority ?? 'medium',
     assignee: initial?.assignee ?? '',
+    dueDate: initial?.dueDate ?? '',
   };
 }
 
@@ -53,6 +55,7 @@ export function TaskForm({
     };
     if (fields.description) payload.description = fields.description;
     if (fields.assignee) payload.assignee = fields.assignee;
+    if (fields.dueDate) payload.dueDate = fields.dueDate;
     onSubmit(payload);
   }
 
@@ -140,6 +143,20 @@ export function TaskForm({
           onChange={handleChange}
           className={inputClass}
           placeholder="Assignee name"
+        />
+      </div>
+
+      <div className="flex flex-col gap-1">
+        <label htmlFor="dueDate" className={labelClass}>
+          Due Date
+        </label>
+        <input
+          id="dueDate"
+          name="dueDate"
+          type="date"
+          value={fields.dueDate}
+          onChange={handleChange}
+          className={inputClass}
         />
       </div>
 

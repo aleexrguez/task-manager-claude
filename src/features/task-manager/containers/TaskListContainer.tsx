@@ -1,10 +1,15 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTasks, useDeleteTask } from '../hooks/use-tasks';
+import { useArchiveTask } from '../hooks/use-archive-task';
 import { useTaskUIStore } from '../store/task-ui.store';
-import { useToastStore } from '../store/toast.store';
-import { filterTasksByStatus, sortTasksByPriority } from '../utils/task.utils';
-import { TaskFilters, TaskList, ConfirmDialog } from '../components';
+import {
+  filterTasksByStatus,
+  filterVisibleTasks,
+  sortTasks,
+  groupTasksByStatus,
+} from '../utils/task.utils';
+import { TaskFilters, TaskList, ConfirmDialog, BoardView } from '../components';
 
 export function TaskListContainer() {
   const navigate = useNavigate();
@@ -14,13 +19,15 @@ export function TaskListContainer() {
     isPending: isDeleting,
     variables: deletingId,
   } = useDeleteTask();
+  const { mutate: archiveTask } = useArchiveTask();
 
-  const addToast = useToastStore((s) => s.addToast);
   const [taskToDelete, setTaskToDelete] = useState<string | null>(null);
 
   const statusFilter = useTaskUIStore((s) => s.statusFilter);
   const priorityFilter = useTaskUIStore((s) => s.priorityFilter);
   const searchQuery = useTaskUIStore((s) => s.searchQuery);
+  const showArchived = useTaskUIStore((s) => s.showArchived);
+  const viewMode = useTaskUIStore((s) => s.viewMode);
   const setStatusFilter = useTaskUIStore((s) => s.setStatusFilter);
   const setPriorityFilter = useTaskUIStore((s) => s.setPriorityFilter);
   const setSearchQuery = useTaskUIStore((s) => s.setSearchQuery);
@@ -31,10 +38,12 @@ export function TaskListContainer() {
   const filteredTasks = useMemo(() => {
     const allTasks = data?.tasks ?? [];
 
-    let result =
+    let result = filterVisibleTasks(allTasks, showArchived);
+
+    result =
       statusFilter === 'all'
-        ? allTasks
-        : filterTasksByStatus(allTasks, statusFilter);
+        ? result
+        : filterTasksByStatus(result, statusFilter);
 
     if (priorityFilter !== 'all') {
       result = result.filter((task) => task.priority === priorityFilter);
@@ -47,8 +56,8 @@ export function TaskListContainer() {
       );
     }
 
-    return sortTasksByPriority(result);
-  }, [data, statusFilter, priorityFilter, searchQuery]);
+    return sortTasks(result);
+  }, [data, statusFilter, priorityFilter, searchQuery, showArchived]);
 
   function handleDelete(id: string): void {
     setTaskToDelete(id);
@@ -65,6 +74,10 @@ export function TaskListContainer() {
 
   function handleCancelDelete(): void {
     setTaskToDelete(null);
+  }
+
+  function handleArchive(id: string): void {
+    archiveTask(id);
   }
 
   if (isError) {
@@ -97,6 +110,8 @@ export function TaskListContainer() {
     );
   }
 
+  const board = groupTasksByStatus(filteredTasks);
+
   return (
     <>
       <div className="flex flex-col gap-4">
@@ -109,15 +124,26 @@ export function TaskListContainer() {
           onSearchChange={setSearchQuery}
           onReset={resetFilters}
         />
-        <TaskList
-          tasks={filteredTasks}
-          isLoading={isLoading}
-          deletingId={isDeleting ? (deletingId ?? null) : null}
-          onEdit={openEditModal}
-          onDelete={handleDelete}
-          onClick={(id) => navigate(`/tasks/${id}`)}
-          onCreateNew={openCreateModal}
-        />
+        {viewMode === 'board' ? (
+          <BoardView
+            board={board}
+            onEdit={openEditModal}
+            onDelete={handleDelete}
+            onClick={(id) => navigate(`/tasks/${id}`)}
+            onArchive={handleArchive}
+          />
+        ) : (
+          <TaskList
+            tasks={filteredTasks}
+            isLoading={isLoading}
+            deletingId={isDeleting ? (deletingId ?? null) : null}
+            onEdit={openEditModal}
+            onDelete={handleDelete}
+            onClick={(id) => navigate(`/tasks/${id}`)}
+            onCreateNew={openCreateModal}
+            onArchive={handleArchive}
+          />
+        )}
       </div>
       <ConfirmDialog
         isOpen={!!taskToDelete}

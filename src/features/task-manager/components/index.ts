@@ -11,3 +11,8 @@ export { ToastContainer } from './ToastContainer';
 export { TaskDetailView } from './TaskDetailView';
 export { TaskNotFound } from './TaskNotFound';
 export { TaskErrorState } from './TaskErrorState';
+export { DueDateDisplay } from './DueDateDisplay';
+export { ViewToggle } from './ViewToggle';
+export { RetentionConfig } from './RetentionConfig';
+export { BoardColumn } from './BoardColumn';
+export { BoardView } from './BoardView';

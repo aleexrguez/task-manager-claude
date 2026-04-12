@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import type { Task } from '../../types';
 import { TaskDetailView } from '../TaskDetailView';
 
@@ -207,5 +207,80 @@ describe('TaskDetailView', () => {
     await user.click(screen.getByRole('button', { name: /back/i }));
 
     expect(onBack).toHaveBeenCalledOnce();
+  });
+});
+
+describe('TaskDetailView — Block 1 fields', () => {
+  const baseTask: Task = {
+    id: 'test-block1-uuid',
+    title: 'Block 1 Detail Task',
+    status: 'in-progress',
+    priority: 'medium',
+    isArchived: false,
+    createdAt: '2026-04-01T10:00:00.000Z',
+    updatedAt: '2026-04-01T10:00:00.000Z',
+  };
+
+  it('renders dueDate in metadata when task has a dueDate', () => {
+    const task: Task = { ...baseTask, dueDate: '2026-05-15' };
+
+    render(
+      <TaskDetailView
+        task={task}
+        onEdit={vi.fn()}
+        onDelete={vi.fn()}
+        onBack={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText(/2026-05-15/)).toBeInTheDocument();
+  });
+
+  it('does not render due date label when task has no dueDate', () => {
+    render(
+      <TaskDetailView
+        task={baseTask}
+        onEdit={vi.fn()}
+        onDelete={vi.fn()}
+        onBack={vi.fn()}
+      />,
+    );
+
+    expect(screen.queryByText(/due date/i)).not.toBeInTheDocument();
+  });
+
+  it('renders completedAt when task is done', () => {
+    const task: Task = {
+      ...baseTask,
+      status: 'done',
+      completedAt: '2026-04-10T14:30:00.000Z',
+      isArchived: false,
+    };
+
+    render(
+      <TaskDetailView
+        task={task}
+        onEdit={vi.fn()}
+        onDelete={vi.fn()}
+        onBack={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText(/Completed/)).toBeInTheDocument();
+  });
+
+  it('does not render completedAt when task is not done', () => {
+    const task: Task = { ...baseTask, status: 'todo' };
+
+    render(
+      <TaskDetailView
+        task={task}
+        onEdit={vi.fn()}
+        onDelete={vi.fn()}
+        onBack={vi.fn()}
+      />,
+    );
+
+    expect(screen.queryByText(/Completed/)).not.toBeInTheDocument();
   });
 });
