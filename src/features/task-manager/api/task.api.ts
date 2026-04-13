@@ -7,4 +7,4 @@ export {
   archiveTask,
   unarchiveTask,
   purgeTasks,
-} from './mock-api';
+} from './supabase-api';
