@@ -10,7 +10,6 @@ const mockTask: Task = {
   description: 'Users cannot log in with email containing plus signs',
   status: 'in-progress',
   priority: 'high',
-  assignee: 'Jane Doe',
   createdAt: '2026-03-15T10:00:00.000Z',
   updatedAt: '2026-03-20T15:30:00.000Z',
 };

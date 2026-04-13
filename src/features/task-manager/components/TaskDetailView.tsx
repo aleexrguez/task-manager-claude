@@ -61,14 +61,6 @@ export function TaskDetailView({
         <div className="grid grid-cols-2 gap-4 border-t border-gray-100 pt-4 text-sm dark:border-gray-700">
           <div>
             <span className="font-medium text-gray-500 dark:text-gray-400">
-              Assignee
-            </span>
-            <p className="mt-1 text-gray-900 dark:text-gray-100">
-              {task.assignee ?? 'Unassigned'}
-            </p>
-          </div>
-          <div>
-            <span className="font-medium text-gray-500 dark:text-gray-400">
               Created
             </span>
             <p className="mt-1 text-gray-900 dark:text-gray-100">

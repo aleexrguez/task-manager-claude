@@ -10,7 +10,6 @@ const mockTask: Task = {
   description: 'This is a test description',
   status: 'in-progress',
   priority: 'high',
-  assignee: 'John Doe',
   createdAt: '2026-03-15T10:00:00.000Z',
   updatedAt: '2026-03-20T15:30:00.000Z',
 };
@@ -86,37 +85,6 @@ describe('TaskDetailView', () => {
     );
 
     expect(screen.getByText('High')).toBeInTheDocument();
-  });
-
-  it('renders the assignee name', () => {
-    render(
-      <TaskDetailView
-        task={mockTask}
-        onEdit={vi.fn()}
-        onDelete={vi.fn()}
-        onBack={vi.fn()}
-      />,
-    );
-
-    expect(screen.getByText('John Doe')).toBeInTheDocument();
-  });
-
-  it('renders "Unassigned" when assignee is undefined', () => {
-    const taskWithoutAssignee: Task = {
-      ...mockTask,
-      assignee: undefined,
-    };
-
-    render(
-      <TaskDetailView
-        task={taskWithoutAssignee}
-        onEdit={vi.fn()}
-        onDelete={vi.fn()}
-        onBack={vi.fn()}
-      />,
-    );
-
-    expect(screen.getByText(/unassigned/i)).toBeInTheDocument();
   });
 
   it('renders formatted created date', () => {

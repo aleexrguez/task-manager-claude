@@ -94,13 +94,6 @@ export function TaskCard({
       </div>
 
       <div className="mt-3 flex items-center justify-between border-t border-gray-100 pt-3 text-xs text-gray-400 dark:border-gray-700 dark:text-gray-500">
-        {task.assignee ? (
-          <span className="truncate">
-            <span className="font-medium">Assignee:</span> {task.assignee}
-          </span>
-        ) : (
-          <span>Unassigned</span>
-        )}
         <span className="shrink-0">{formattedDate}</span>
       </div>
       {task.dueDate && (

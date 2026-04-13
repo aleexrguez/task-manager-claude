@@ -15,7 +15,6 @@ export function createLocalTask(input: CreateTaskInput): Task {
     description: input.description,
     status: input.status ?? 'todo',
     priority: input.priority ?? 'medium',
-    assignee: input.assignee,
     createdAt: now,
     updatedAt: now,
   };

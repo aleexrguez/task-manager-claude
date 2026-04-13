@@ -49,7 +49,6 @@ export async function createTask(input: CreateTaskInput): Promise<Task> {
     description: input.description,
     status: input.status ?? 'todo',
     priority: input.priority ?? 'medium',
-    assignee: input.assignee,
     dueDate: input.dueDate,
     completedAt: undefined,
     isArchived: false,

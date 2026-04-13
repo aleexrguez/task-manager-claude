@@ -10,7 +10,6 @@ const mockTask: Task = {
   description: 'Description',
   status: 'todo' as const,
   priority: 'medium' as const,
-  assignee: 'John',
   createdAt: '2026-01-01T00:00:00.000Z',
   updatedAt: '2026-01-01T00:00:00.000Z',
 };

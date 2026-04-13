@@ -12,7 +12,6 @@ export const taskSchema = z.object({
   description: z.string().max(2000).optional(),
   status: taskStatusSchema,
   priority: taskPrioritySchema,
-  assignee: z.string().optional(),
   dueDate: z.string().date().optional(),
   completedAt: z.iso.datetime().optional(),
   isArchived: z.boolean().default(false),
@@ -26,7 +25,6 @@ export const createTaskInputSchema = z.object({
   description: z.string().max(2000).optional(),
   status: taskStatusSchema.default('todo'),
   priority: taskPrioritySchema.default('medium'),
-  assignee: z.string().optional(),
   dueDate: z.string().date().optional(),
 });
 export type CreateTaskInput = z.infer<typeof createTaskInputSchema>;
