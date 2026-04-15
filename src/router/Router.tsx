@@ -5,6 +5,9 @@ import {
 } from '@/features/task-manager/containers';
 import { LoginContainer, RegisterContainer } from '@/features/auth';
 import { LandingPage } from '@/features/landing';
+import { AppShellContainer } from '@/shared/components/app-shell';
+import { RecurrencesPlaceholder } from '@/features/recurrences';
+import { SettingsPlaceholder } from '@/features/settings';
 import { ProtectedRoute } from './ProtectedRoute';
 import { PublicOnlyRoute } from './PublicOnlyRoute';
 
@@ -38,23 +41,21 @@ export function Router() {
           }
         />
 
-        {/* Protected routes */}
+        {/* Protected routes with App Shell */}
         <Route
           path="/app"
           element={
             <ProtectedRoute>
-              <TaskDashboardContainer />
+              <AppShellContainer />
             </ProtectedRoute>
           }
-        />
-        <Route
-          path="/app/tasks/:id"
-          element={
-            <ProtectedRoute>
-              <TaskDetailContainer />
-            </ProtectedRoute>
-          }
-        />
+        >
+          <Route index element={<Navigate to="tasks" replace />} />
+          <Route path="tasks" element={<TaskDashboardContainer />} />
+          <Route path="tasks/:id" element={<TaskDetailContainer />} />
+          <Route path="recurrences" element={<RecurrencesPlaceholder />} />
+          <Route path="settings" element={<SettingsPlaceholder />} />
+        </Route>
 
         {/* Catch-all */}
         <Route path="*" element={<Navigate to="/" replace />} />

@@ -1,22 +1,11 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MemoryRouter } from 'react-router-dom';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { TaskDashboardContainer } from '../TaskDashboardContainer';
 import { useTaskUIStore } from '../../store';
-import { useAppPreferencesStore } from '@/shared/store/app-preferences.store';
 import type { Task } from '../../types';
-
-// Mock auth
-vi.mock('@/features/auth/hooks', () => ({
-  useAuth: () => ({
-    user: { id: 'test-user' },
-    session: null,
-    isLoading: false,
-  }),
-  useSignOut: () => ({ signOut: vi.fn(), isPending: false }),
-}));
 
 // Mock child containers to isolate dashboard tests
 vi.mock('../TaskListContainer', () => ({
@@ -43,22 +32,16 @@ vi.mock('../../api', () => ({
   purgeTasks: vi.fn(),
 }));
 
-import { fetchTasks } from '../../api';
+// Mock auth — provide authenticated user for hooks with enabled: !!user
+vi.mock('@/features/auth/hooks', () => ({
+  useAuth: () => ({
+    user: { id: 'test-user' },
+    session: null,
+    isLoading: false,
+  }),
+}));
 
-// jsdom doesn't have matchMedia — needed by useApplyTheme
-Object.defineProperty(window, 'matchMedia', {
-  writable: true,
-  value: vi.fn().mockImplementation((query: string) => ({
-    matches: false,
-    media: query,
-    onchange: null,
-    addListener: vi.fn(),
-    removeListener: vi.fn(),
-    addEventListener: vi.fn(),
-    removeEventListener: vi.fn(),
-    dispatchEvent: vi.fn(),
-  })),
-});
+import { fetchTasks } from '../../api';
 
 function makeTask(overrides: Partial<Task> = {}): Task {
   return {
@@ -96,10 +79,6 @@ describe('TaskDashboardContainer', () => {
       viewMode: 'list',
       showArchived: false,
     });
-    useAppPreferencesStore.setState({
-      theme: 'system',
-      retentionPolicy: 'never',
-    });
 
     const mockTasks = [
       makeTask({
@@ -130,19 +109,6 @@ describe('TaskDashboardContainer', () => {
     expect(screen.getByRole('button', { name: /board/i })).toBeInTheDocument();
   });
 
-  it('renders RetentionConfig component with retention options', async () => {
-    const Wrapper = createWrapper();
-    render(<TaskDashboardContainer />, { wrapper: Wrapper });
-
-    const retentionSelect = screen.getByRole('combobox');
-    expect(retentionSelect).toBeInTheDocument();
-
-    const options = screen.getAllByRole('option');
-    const optionTexts = options.map((o) => o.textContent);
-    expect(optionTexts).toContain('5 days');
-    expect(optionTexts).toContain('7 days');
-  });
-
   it('changes viewMode in store when Board button is clicked', async () => {
     const user = userEvent.setup();
     const Wrapper = createWrapper();
@@ -152,18 +118,5 @@ describe('TaskDashboardContainer', () => {
     await user.click(boardButton);
 
     expect(useTaskUIStore.getState().viewMode).toBe('board');
-  });
-
-  it('changes retentionPolicy in store when retention select is changed', async () => {
-    const user = userEvent.setup();
-    const Wrapper = createWrapper();
-    render(<TaskDashboardContainer />, { wrapper: Wrapper });
-
-    const retentionSelect = screen.getByRole('combobox');
-    await user.selectOptions(retentionSelect, '7d');
-
-    await waitFor(() => {
-      expect(useAppPreferencesStore.getState().retentionPolicy).toBe('7d');
-    });
   });
 });

@@ -1,12 +1,15 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
-import { RetentionConfig } from '../RetentionConfig';
+import { RetentionPolicySelect } from '../RetentionPolicySelect';
 
-describe('RetentionConfig', () => {
+describe('RetentionPolicySelect', () => {
   it('renders a select with the 4 retention options', () => {
     render(
-      <RetentionConfig retentionPolicy="7d" onRetentionChange={vi.fn()} />,
+      <RetentionPolicySelect
+        retentionPolicy="7d"
+        onRetentionChange={vi.fn()}
+      />,
     );
 
     const select = screen.getByRole('combobox');
@@ -22,7 +25,10 @@ describe('RetentionConfig', () => {
 
   it('shows the current retentionPolicy as the selected value', () => {
     render(
-      <RetentionConfig retentionPolicy="30d" onRetentionChange={vi.fn()} />,
+      <RetentionPolicySelect
+        retentionPolicy="30d"
+        onRetentionChange={vi.fn()}
+      />,
     );
 
     const select = screen.getByRole('combobox');
@@ -34,7 +40,7 @@ describe('RetentionConfig', () => {
     const onRetentionChange = vi.fn();
 
     render(
-      <RetentionConfig
+      <RetentionPolicySelect
         retentionPolicy="7d"
         onRetentionChange={onRetentionChange}
       />,
@@ -51,7 +57,7 @@ describe('RetentionConfig', () => {
     const onRetentionChange = vi.fn();
 
     render(
-      <RetentionConfig
+      <RetentionPolicySelect
         retentionPolicy="7d"
         onRetentionChange={onRetentionChange}
       />,

@@ -1,14 +1,14 @@
 import type { RetentionPolicy } from '../types';
 
-interface RetentionConfigProps {
+interface RetentionPolicySelectProps {
   retentionPolicy: RetentionPolicy;
   onRetentionChange: (policy: RetentionPolicy) => void;
 }
 
-export function RetentionConfig({
+export function RetentionPolicySelect({
   retentionPolicy,
   onRetentionChange,
-}: RetentionConfigProps) {
+}: RetentionPolicySelectProps) {
   return (
     <select
       value={retentionPolicy}

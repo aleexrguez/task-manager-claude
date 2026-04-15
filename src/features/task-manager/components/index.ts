@@ -13,6 +13,6 @@ export { TaskNotFound } from './TaskNotFound';
 export { TaskErrorState } from './TaskErrorState';
 export { DueDateDisplay } from './DueDateDisplay';
 export { ViewToggle } from './ViewToggle';
-export { RetentionConfig } from './RetentionConfig';
+export { RetentionPolicySelect } from './RetentionPolicySelect';
 export { BoardColumn } from './BoardColumn';
 export { BoardView } from './BoardView';
