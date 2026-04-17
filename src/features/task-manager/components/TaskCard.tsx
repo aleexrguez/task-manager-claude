@@ -98,17 +98,14 @@ export function TaskCard({
             Recurring
           </span>
         )}
+        {task.dueDate && (
+          <DueDateDisplay dueDate={task.dueDate} status={task.status} />
+        )}
       </div>
 
       <div className="mt-3 flex items-center justify-between border-t border-gray-100 pt-3 text-xs text-gray-400 dark:border-gray-700 dark:text-gray-500">
         <span className="shrink-0">{formattedDate}</span>
       </div>
-      {task.dueDate && (
-        <div className="mt-2 text-xs text-gray-400 dark:text-gray-500">
-          <span className="font-medium">Due:</span>{' '}
-          <DueDateDisplay dueDate={task.dueDate} status={task.status} />
-        </div>
-      )}
       {task.status === 'done' && task.completedAt && (
         <div className="mt-1 text-xs text-gray-400 dark:text-gray-500">
           <span className="font-medium">Completed</span>{' '}

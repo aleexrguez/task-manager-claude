@@ -116,3 +116,24 @@ export function isDueDateOverdue(
   if (status === 'done') return false;
   return dueDate < today;
 }
+
+function parseDateComponents(dateStr: string): [number, number, number] {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  return [y, m, d];
+}
+
+/**
+ * Computes the number of days between today and the due date.
+ * Positive = future, 0 = today, negative = overdue.
+ * Uses date-only arithmetic (YYYY-MM-DD) to avoid timezone issues.
+ */
+export function getDueDateDaysRemaining(
+  dueDate: string,
+  today: string = new Date().toLocaleDateString('en-CA'),
+): number {
+  const [dy, dm, dd] = parseDateComponents(dueDate);
+  const [ty, tm, td] = parseDateComponents(today);
+  const dueMsUTC = Date.UTC(dy, dm - 1, dd);
+  const todayMsUTC = Date.UTC(ty, tm - 1, td);
+  return Math.round((dueMsUTC - todayMsUTC) / 86400000);
+}

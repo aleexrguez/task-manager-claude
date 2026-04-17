@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Task } from '../../types';
 import { TaskCard } from '../TaskCard';
 
@@ -75,18 +75,31 @@ describe('TaskCard — Block 1 features', () => {
     updatedAt: '2026-04-01T10:00:00.000Z',
   };
 
-  it('renders dueDate when task has a dueDate', () => {
-    const task: Task = { ...baseTask, dueDate: '2026-05-15' };
+  beforeEach(() => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    vi.setSystemTime(new Date('2026-04-17T12:00:00.000Z'));
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('renders a countdown badge in the badge row when task has a dueDate', () => {
+    // dueDate 5 days from pinned today (2026-04-17) → "5 days left"
+    const task: Task = { ...baseTask, dueDate: '2026-04-22' };
 
     render(<TaskCard task={task} />);
 
-    expect(screen.getByText(/2026-05-15/)).toBeInTheDocument();
+    expect(screen.getByText('5 days left')).toBeInTheDocument();
+    expect(screen.queryByText('Due:')).not.toBeInTheDocument();
   });
 
   it('does not render due date section when task has no dueDate', () => {
     render(<TaskCard task={baseTask} />);
 
-    expect(screen.queryByText(/2026-05-15/)).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/days left|Due today|Tomorrow|Overdue/i),
+    ).not.toBeInTheDocument();
   });
 
   it('renders completedAt for done tasks', () => {

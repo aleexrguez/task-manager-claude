@@ -5,6 +5,7 @@ import {
   getExpiredTaskIds,
   filterVisibleTasks,
   isDueDateOverdue,
+  getDueDateDaysRemaining,
 } from '../../utils';
 
 // ---------------------------------------------------------------------------
@@ -454,5 +455,47 @@ describe('isDueDateOverdue', () => {
     expect(isDueDateOverdue('2025-03-15', 'in-progress', customToday)).toBe(
       false,
     );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 6. getDueDateDaysRemaining
+// ---------------------------------------------------------------------------
+
+describe('getDueDateDaysRemaining', () => {
+  it('returns positive number when due date is in the future', () => {
+    expect(getDueDateDaysRemaining('2026-05-10', '2026-05-05')).toBe(5);
+  });
+
+  it('returns 0 when due date is today', () => {
+    expect(getDueDateDaysRemaining('2026-05-05', '2026-05-05')).toBe(0);
+  });
+
+  it('returns negative number when due date is in the past', () => {
+    expect(getDueDateDaysRemaining('2026-05-01', '2026-05-05')).toBe(-4);
+  });
+
+  it('returns 1 for tomorrow', () => {
+    expect(getDueDateDaysRemaining('2026-05-06', '2026-05-05')).toBe(1);
+  });
+
+  it('returns -1 for yesterday', () => {
+    expect(getDueDateDaysRemaining('2026-05-04', '2026-05-05')).toBe(-1);
+  });
+
+  it('handles month boundary correctly', () => {
+    expect(getDueDateDaysRemaining('2026-06-01', '2026-05-30')).toBe(2);
+  });
+
+  it('handles year boundary correctly', () => {
+    expect(getDueDateDaysRemaining('2027-01-01', '2026-12-30')).toBe(2);
+  });
+
+  it('handles leap year correctly (Feb has 29 days in 2028)', () => {
+    expect(getDueDateDaysRemaining('2028-03-01', '2028-02-28')).toBe(2);
+  });
+
+  it('handles large differences', () => {
+    expect(getDueDateDaysRemaining('2026-12-31', '2026-01-01')).toBe(364);
   });
 });

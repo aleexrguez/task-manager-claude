@@ -189,7 +189,7 @@ describe('TaskDetailView — Block 1 fields', () => {
     updatedAt: '2026-04-01T10:00:00.000Z',
   };
 
-  it('renders dueDate in metadata when task has a dueDate', () => {
+  it('renders due date section in metadata when task has a dueDate', () => {
     const task: Task = { ...baseTask, dueDate: '2026-05-15' };
 
     render(
@@ -201,7 +201,7 @@ describe('TaskDetailView — Block 1 fields', () => {
       />,
     );
 
-    expect(screen.getByText(/2026-05-15/)).toBeInTheDocument();
+    expect(screen.getByText('Due Date')).toBeInTheDocument();
   });
 
   it('does not render due date label when task has no dueDate', () => {
