@@ -4,3 +4,8 @@ export { RecurrenceForm } from './components/RecurrenceForm';
 export { RecurrenceCard } from './components/RecurrenceCard';
 export { RecurrenceList } from './components/RecurrenceList';
 export { useRecurrenceUIStore } from './store/recurrence-ui.store';
+export {
+  CreateRecurrenceContainer,
+  EditRecurrenceContainer,
+  RecurrenceDashboardContainer,
+} from './containers';

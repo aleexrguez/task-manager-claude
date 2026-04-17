@@ -1,4 +1,5 @@
 import type { Task } from '../types';
+import { isGeneratedTask } from '@/features/recurrences/utils/recurrence.utils';
 import { StatusBadge } from './StatusBadge';
 import { PriorityIndicator } from './PriorityIndicator';
 import { DueDateDisplay } from './DueDateDisplay';
@@ -21,6 +22,7 @@ export function TaskCard({
   isDeleting = false,
 }: TaskCardProps) {
   const formattedDate = new Date(task.createdAt).toLocaleDateString();
+  const recurring = isGeneratedTask(task);
 
   function handleKeyDown(event: React.KeyboardEvent<HTMLDivElement>): void {
     if (!onClick) return;
@@ -56,7 +58,7 @@ export function TaskCard({
               Edit
             </button>
           )}
-          {onDelete && (
+          {!recurring && onDelete && (
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -91,6 +93,11 @@ export function TaskCard({
       <div className="flex flex-wrap items-center gap-2">
         <StatusBadge status={task.status} />
         <PriorityIndicator priority={task.priority} />
+        {recurring && (
+          <span className="inline-flex items-center rounded-full bg-indigo-100 px-2.5 py-0.5 text-xs font-medium text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300">
+            Recurring
+          </span>
+        )}
       </div>
 
       <div className="mt-3 flex items-center justify-between border-t border-gray-100 pt-3 text-xs text-gray-400 dark:border-gray-700 dark:text-gray-500">

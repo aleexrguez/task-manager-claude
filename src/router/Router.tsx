@@ -6,7 +6,7 @@ import {
 import { LoginContainer, RegisterContainer } from '@/features/auth';
 import { LandingPage } from '@/features/landing';
 import { AppShellContainer } from '@/shared/components/app-shell';
-import { RecurrencesPlaceholder } from '@/features/recurrences';
+import { RecurrenceDashboardContainer } from '@/features/recurrences';
 import { SettingsContainer } from '@/features/settings';
 import { ProtectedRoute } from './ProtectedRoute';
 import { PublicOnlyRoute } from './PublicOnlyRoute';
@@ -53,7 +53,7 @@ export function Router() {
           <Route index element={<Navigate to="tasks" replace />} />
           <Route path="tasks" element={<TaskDashboardContainer />} />
           <Route path="tasks/:id" element={<TaskDetailContainer />} />
-          <Route path="recurrences" element={<RecurrencesPlaceholder />} />
+          <Route path="recurrences" element={<RecurrenceDashboardContainer />} />
           <Route path="settings" element={<SettingsContainer />} />
         </Route>
 

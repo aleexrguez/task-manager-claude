@@ -166,3 +166,101 @@ describe('TaskCard — Block 1 features', () => {
     expect(onClick).not.toHaveBeenCalled();
   });
 });
+
+describe('TaskCard — recurring task behavior', () => {
+  const baseRecurringTask: Task = {
+    id: 'task-recurring-001',
+    title: 'Daily Standup',
+    status: 'todo',
+    priority: 'medium',
+    isArchived: false,
+    createdAt: '2026-04-17T08:00:00.000Z',
+    updatedAt: '2026-04-17T08:00:00.000Z',
+    recurrenceTemplateId: 'template-uuid-001',
+    recurrenceDateKey: '2026-04-17',
+  };
+
+  const baseNormalTask: Task = {
+    id: 'task-normal-001',
+    title: 'Normal Task',
+    status: 'todo',
+    priority: 'medium',
+    isArchived: false,
+    createdAt: '2026-04-17T08:00:00.000Z',
+    updatedAt: '2026-04-17T08:00:00.000Z',
+  };
+
+  it('shows "Recurring" badge when task has recurrenceDateKey', () => {
+    render(<TaskCard task={baseRecurringTask} />);
+
+    expect(screen.getByText('Recurring')).toBeInTheDocument();
+  });
+
+  it('does not show "Recurring" badge when task has no recurrenceDateKey', () => {
+    render(<TaskCard task={baseNormalTask} />);
+
+    expect(screen.queryByText('Recurring')).not.toBeInTheDocument();
+  });
+
+  it('hides delete button for recurring tasks even when onDelete is provided', () => {
+    const onDelete = vi.fn();
+
+    render(<TaskCard task={baseRecurringTask} onDelete={onDelete} />);
+
+    expect(
+      screen.queryByRole('button', { name: /delete/i }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('still shows edit button for recurring tasks', () => {
+    const onEdit = vi.fn();
+
+    render(<TaskCard task={baseRecurringTask} onEdit={onEdit} />);
+
+    expect(
+      screen.getByRole('button', { name: /edit/i }),
+    ).toBeInTheDocument();
+  });
+
+  it('still shows archive button for done recurring tasks', () => {
+    const onArchive = vi.fn();
+    const doneRecurringTask: Task = {
+      ...baseRecurringTask,
+      status: 'done',
+    };
+
+    render(<TaskCard task={doneRecurringTask} onArchive={onArchive} />);
+
+    expect(
+      screen.getByRole('button', { name: /archive/i }),
+    ).toBeInTheDocument();
+  });
+
+  it('edit callback still works for recurring tasks', async () => {
+    const user = userEvent.setup();
+    const onEdit = vi.fn();
+
+    render(<TaskCard task={baseRecurringTask} onEdit={onEdit} />);
+
+    await user.click(screen.getByRole('button', { name: /edit/i }));
+
+    expect(onEdit).toHaveBeenCalledOnce();
+    expect(onEdit).toHaveBeenCalledWith('task-recurring-001');
+  });
+
+  it('archive callback still works for recurring tasks', async () => {
+    const user = userEvent.setup();
+    const onArchive = vi.fn();
+    const doneRecurringTask: Task = {
+      ...baseRecurringTask,
+      status: 'done',
+    };
+
+    render(<TaskCard task={doneRecurringTask} onArchive={onArchive} />);
+
+    await user.click(screen.getByRole('button', { name: /archive/i }));
+
+    expect(onArchive).toHaveBeenCalledOnce();
+    expect(onArchive).toHaveBeenCalledWith('task-recurring-001');
+  });
+});
