@@ -7,6 +7,7 @@ interface BoardViewProps {
   onDelete?: (id: string) => void;
   onClick?: (id: string) => void;
   onArchive?: (id: string) => void;
+  deletingId?: string | null;
 }
 
 export function BoardView({
@@ -15,9 +16,10 @@ export function BoardView({
   onDelete,
   onClick,
   onArchive,
+  deletingId,
 }: BoardViewProps) {
   return (
-    <div className="grid grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       <BoardColumn
         title="Todo"
         tasks={board.todo}
@@ -25,6 +27,7 @@ export function BoardView({
         onDelete={onDelete}
         onClick={onClick}
         onArchive={onArchive}
+        deletingId={deletingId}
       />
       <BoardColumn
         title="In Progress"
@@ -33,6 +36,7 @@ export function BoardView({
         onDelete={onDelete}
         onClick={onClick}
         onArchive={onArchive}
+        deletingId={deletingId}
       />
       <BoardColumn
         title="Done"
@@ -41,6 +45,7 @@ export function BoardView({
         onDelete={onDelete}
         onClick={onClick}
         onArchive={onArchive}
+        deletingId={deletingId}
       />
     </div>
   );

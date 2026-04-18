@@ -104,4 +104,36 @@ describe('BoardView', () => {
     expect(onEdit).toHaveBeenCalledOnce();
     expect(onEdit).toHaveBeenCalledWith('task-xyz');
   });
+
+  it('uses responsive grid classes that stack on mobile and show 3 columns on md+', () => {
+    const { container } = render(<BoardView board={emptyBoard} />);
+
+    const grid = container.firstElementChild;
+    expect(grid).toHaveClass('grid-cols-1');
+    expect(grid).toHaveClass('md:grid-cols-3');
+  });
+
+  it('shows delete loading state on the matching task card when deletingId is provided', () => {
+    const board: TaskBoard = {
+      todo: [
+        makeTask({ id: 'deleting-task', title: 'Being Deleted', status: 'todo' }),
+        makeTask({ id: 'other-task', title: 'Other Task', status: 'todo' }),
+      ],
+      'in-progress': [],
+      done: [],
+    };
+    const onDelete = vi.fn();
+
+    render(
+      <BoardView
+        board={board}
+        onDelete={onDelete}
+        deletingId="deleting-task"
+      />,
+    );
+
+    // When isDeleting=true the Delete button label changes to '...'
+    const deleteButtons = screen.getAllByRole('button', { name: '...' });
+    expect(deleteButtons).toHaveLength(1);
+  });
 });

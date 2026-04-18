@@ -131,6 +131,7 @@ export function TaskListContainer() {
             onDelete={handleDelete}
             onClick={(id) => navigate(`/app/tasks/${id}`)}
             onArchive={handleArchive}
+            deletingId={isDeleting ? (deletingId ?? null) : null}
           />
         ) : (
           <TaskList
