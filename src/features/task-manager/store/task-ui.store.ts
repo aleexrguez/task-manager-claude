@@ -48,6 +48,15 @@ function getInitialViewMode(): ViewMode {
   }
 }
 
+function getInitialShowArchived(): boolean {
+  try {
+    const stored = localStorage.getItem('task-manager-show-archived');
+    return stored === 'true';
+  } catch {
+    return false;
+  }
+}
+
 export const useTaskUIStore = create<TaskUIState>((set) => ({
   ...initialFilters,
 
@@ -56,7 +65,7 @@ export const useTaskUIStore = create<TaskUIState>((set) => ({
   selectedTaskId: null,
 
   viewMode: getInitialViewMode(),
-  showArchived: false,
+  showArchived: getInitialShowArchived(),
 
   setStatusFilter: (status) => set({ statusFilter: status }),
   setPriorityFilter: (priority) => set({ priorityFilter: priority }),
@@ -77,5 +86,13 @@ export const useTaskUIStore = create<TaskUIState>((set) => ({
       return { viewMode: mode };
     }),
   toggleShowArchived: () =>
-    set((state) => ({ showArchived: !state.showArchived })),
+    set((state) => {
+      const next = !state.showArchived;
+      try {
+        localStorage.setItem('task-manager-show-archived', String(next));
+      } catch {
+        // ignore
+      }
+      return { showArchived: next };
+    }),
 }));

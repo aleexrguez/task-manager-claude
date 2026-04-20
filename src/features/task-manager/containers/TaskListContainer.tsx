@@ -38,6 +38,7 @@ export function TaskListContainer() {
   const setPriorityFilter = useTaskUIStore((s) => s.setPriorityFilter);
   const setSearchQuery = useTaskUIStore((s) => s.setSearchQuery);
   const resetFilters = useTaskUIStore((s) => s.resetFilters);
+  const toggleShowArchived = useTaskUIStore((s) => s.toggleShowArchived);
   const openEditModal = useTaskUIStore((s) => s.openEditModal);
   const openCreateModal = useTaskUIStore((s) => s.openCreateModal);
 
@@ -126,10 +127,12 @@ export function TaskListContainer() {
           statusFilter={statusFilter}
           priorityFilter={priorityFilter}
           searchQuery={searchQuery}
+          showArchived={showArchived}
           onStatusChange={setStatusFilter}
           onPriorityChange={setPriorityFilter}
           onSearchChange={setSearchQuery}
           onReset={resetFilters}
+          onToggleArchived={toggleShowArchived}
         />
         <div className="rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20">
           <p className="text-sm font-medium text-red-700 dark:text-red-400">
@@ -156,10 +159,12 @@ export function TaskListContainer() {
           statusFilter={statusFilter}
           priorityFilter={priorityFilter}
           searchQuery={searchQuery}
+          showArchived={showArchived}
           onStatusChange={setStatusFilter}
           onPriorityChange={setPriorityFilter}
           onSearchChange={setSearchQuery}
           onReset={resetFilters}
+          onToggleArchived={toggleShowArchived}
         />
         {viewMode === 'board' ? (
           <BoardView

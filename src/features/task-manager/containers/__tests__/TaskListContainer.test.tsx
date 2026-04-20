@@ -239,7 +239,8 @@ describe('TaskListContainer — Block 1 features', () => {
     // Focus the card to make buttons visible
     await user.tab();
 
-    const archiveButton = screen.getByRole('button', { name: /archive/i });
+    // Use exact name 'Archive' to avoid matching 'Show archived' filter button
+    const archiveButton = screen.getByRole('button', { name: 'Archive' });
     expect(archiveButton).toBeInTheDocument();
   });
 

@@ -5,20 +5,24 @@ interface TaskFiltersProps {
   statusFilter: TaskStatus | 'all';
   priorityFilter: TaskPriority | 'all';
   searchQuery: string;
+  showArchived: boolean;
   onStatusChange: (status: TaskStatus | 'all') => void;
   onPriorityChange: (priority: TaskPriority | 'all') => void;
   onSearchChange: (query: string) => void;
   onReset: () => void;
+  onToggleArchived: () => void;
 }
 
 export function TaskFilters({
   statusFilter,
   priorityFilter,
   searchQuery,
+  showArchived,
   onStatusChange,
   onPriorityChange,
   onSearchChange,
   onReset,
+  onToggleArchived,
 }: TaskFiltersProps) {
   function handleStatusChange(e: ChangeEvent<HTMLSelectElement>): void {
     onStatusChange(e.target.value as TaskStatus | 'all');
@@ -73,6 +77,18 @@ export function TaskFilters({
         className="rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
       >
         Reset
+      </button>
+
+      <button
+        type="button"
+        onClick={onToggleArchived}
+        className={
+          showArchived
+            ? 'rounded-md border border-indigo-300 px-3 py-2 text-sm bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300 dark:border-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900'
+            : 'rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900'
+        }
+      >
+        {showArchived ? 'Hide archived' : 'Show archived'}
       </button>
     </div>
   );
