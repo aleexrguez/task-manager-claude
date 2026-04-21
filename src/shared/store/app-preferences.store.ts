@@ -7,15 +7,18 @@ import type {
 const THEME_KEY = 'task-manager-theme';
 const RETENTION_KEY = 'task-manager-retention-policy';
 const SIDEBAR_KEY = 'task-manager-sidebar-collapsed';
+const REMINDERS_KEY = 'task-manager-reminders-enabled';
 
 interface AppPreferencesState {
   theme: ThemePreference;
   retentionPolicy: RetentionPolicy;
   isSidebarCollapsed: boolean;
+  remindersEnabled: boolean;
 
   setTheme: (theme: ThemePreference) => void;
   setRetentionPolicy: (policy: RetentionPolicy) => void;
   toggleSidebar: () => void;
+  toggleReminders: () => void;
 }
 
 function getInitialTheme(): ThemePreference {
@@ -59,10 +62,21 @@ function getInitialSidebarCollapsed(): boolean {
   }
 }
 
+function getInitialRemindersEnabled(): boolean {
+  try {
+    const stored = localStorage.getItem(REMINDERS_KEY);
+    if (stored === null) return true;
+    return stored !== 'false';
+  } catch {
+    return true;
+  }
+}
+
 export const useAppPreferencesStore = create<AppPreferencesState>((set) => ({
   theme: getInitialTheme(),
   retentionPolicy: getInitialRetentionPolicy(),
   isSidebarCollapsed: getInitialSidebarCollapsed(),
+  remindersEnabled: getInitialRemindersEnabled(),
 
   setTheme: (theme) =>
     set(() => {
@@ -93,5 +107,16 @@ export const useAppPreferencesStore = create<AppPreferencesState>((set) => ({
         // ignore
       }
       return { isSidebarCollapsed: next };
+    }),
+
+  toggleReminders: () =>
+    set((state) => {
+      const next = !state.remindersEnabled;
+      try {
+        localStorage.setItem(REMINDERS_KEY, String(next));
+      } catch {
+        // ignore
+      }
+      return { remindersEnabled: next };
     }),
 }));

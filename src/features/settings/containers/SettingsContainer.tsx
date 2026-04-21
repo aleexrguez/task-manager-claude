@@ -12,6 +12,9 @@ export function SettingsContainer() {
     (s) => s.setRetentionPolicy,
   );
 
+  const remindersEnabled = useAppPreferencesStore((s) => s.remindersEnabled);
+  const toggleReminders = useAppPreferencesStore((s) => s.toggleReminders);
+
   const { user } = useAuth();
   const { signOut, isPending: isSigningOut } = useSignOut();
 
@@ -33,6 +36,8 @@ export function SettingsContainer() {
       userEmail={user?.email ?? ''}
       onSignOut={handleSignOut}
       isSigningOut={isSigningOut}
+      remindersEnabled={remindersEnabled}
+      onToggleReminders={toggleReminders}
     />
   );
 }

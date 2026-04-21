@@ -3,6 +3,7 @@ import { useAppPreferencesStore } from '../app-preferences.store';
 const THEME_KEY = 'task-manager-theme';
 const RETENTION_KEY = 'task-manager-retention-policy';
 const SIDEBAR_KEY = 'task-manager-sidebar-collapsed';
+const REMINDERS_KEY = 'task-manager-reminders-enabled';
 
 describe('useAppPreferencesStore', () => {
   beforeEach(() => {
@@ -11,6 +12,7 @@ describe('useAppPreferencesStore', () => {
       theme: 'system',
       retentionPolicy: 'never',
       isSidebarCollapsed: false,
+      remindersEnabled: true,
     });
   });
 
@@ -90,6 +92,30 @@ describe('useAppPreferencesStore', () => {
     it('persists sidebar state to localStorage', () => {
       useAppPreferencesStore.getState().toggleSidebar();
       expect(localStorage.getItem(SIDEBAR_KEY)).toBe('true');
+    });
+  });
+
+  // ─── remindersEnabled ───────────────────────────────────────────────────
+
+  describe('remindersEnabled', () => {
+    it('defaults to true', () => {
+      expect(useAppPreferencesStore.getState().remindersEnabled).toBe(true);
+    });
+
+    it('toggleReminders() flips to false', () => {
+      useAppPreferencesStore.getState().toggleReminders();
+      expect(useAppPreferencesStore.getState().remindersEnabled).toBe(false);
+    });
+
+    it('toggleReminders() called twice returns to true', () => {
+      useAppPreferencesStore.getState().toggleReminders();
+      useAppPreferencesStore.getState().toggleReminders();
+      expect(useAppPreferencesStore.getState().remindersEnabled).toBe(true);
+    });
+
+    it('persists remindersEnabled to localStorage', () => {
+      useAppPreferencesStore.getState().toggleReminders();
+      expect(localStorage.getItem(REMINDERS_KEY)).toBe('false');
     });
   });
 });

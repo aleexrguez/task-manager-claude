@@ -22,6 +22,7 @@ vi.mock('@tanstack/react-query', () => ({
 
 const mockSetTheme = vi.fn();
 const mockSetRetentionPolicy = vi.fn();
+const mockToggleReminders = vi.fn();
 const mockSignOut = vi.fn().mockResolvedValue(undefined);
 const mockClear = vi.fn();
 const mockNavigate = vi.fn();
@@ -43,6 +44,8 @@ beforeEach(() => {
       setRetentionPolicy: mockSetRetentionPolicy,
       isSidebarCollapsed: false,
       toggleSidebar: vi.fn(),
+      remindersEnabled: true,
+      toggleReminders: mockToggleReminders,
     }),
   );
 
@@ -131,5 +134,24 @@ describe('SettingsContainer', () => {
     expect(mockSignOut).toHaveBeenCalledOnce();
     expect(mockClear).toHaveBeenCalledOnce();
     expect(mockNavigate).toHaveBeenCalledWith('/');
+  });
+
+  it('renders reminders checkbox checked when store has remindersEnabled=true', () => {
+    renderContainer();
+
+    expect(
+      screen.getByRole('checkbox', { name: /due date reminders/i }),
+    ).toBeChecked();
+  });
+
+  it('calls toggleReminders from store when checkbox is clicked', async () => {
+    const user = userEvent.setup();
+    renderContainer();
+
+    await user.click(
+      screen.getByRole('checkbox', { name: /due date reminders/i }),
+    );
+
+    expect(mockToggleReminders).toHaveBeenCalledOnce();
   });
 });

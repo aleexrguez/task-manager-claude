@@ -15,6 +15,8 @@ const defaultProps = {
   userEmail: 'test@example.com',
   onSignOut: vi.fn(),
   isSigningOut: false,
+  remindersEnabled: true,
+  onToggleReminders: vi.fn(),
 };
 
 describe('SettingsPage', () => {
@@ -90,6 +92,63 @@ describe('SettingsPage', () => {
 
     expect(
       screen.getByText(/password management coming soon/i),
+    ).toBeInTheDocument();
+  });
+
+  it('renders the Notifications section heading', () => {
+    render(<SettingsPage {...defaultProps} />);
+
+    expect(
+      screen.getByRole('heading', { level: 2, name: /notifications/i }),
+    ).toBeInTheDocument();
+  });
+
+  it('renders the "Due date reminders" checkbox', () => {
+    render(<SettingsPage {...defaultProps} />);
+
+    expect(
+      screen.getByRole('checkbox', { name: /due date reminders/i }),
+    ).toBeInTheDocument();
+  });
+
+  it('checkbox is checked when remindersEnabled is true', () => {
+    render(<SettingsPage {...defaultProps} remindersEnabled={true} />);
+
+    expect(
+      screen.getByRole('checkbox', { name: /due date reminders/i }),
+    ).toBeChecked();
+  });
+
+  it('checkbox is unchecked when remindersEnabled is false', () => {
+    render(<SettingsPage {...defaultProps} remindersEnabled={false} />);
+
+    expect(
+      screen.getByRole('checkbox', { name: /due date reminders/i }),
+    ).not.toBeChecked();
+  });
+
+  it('calls onToggleReminders when checkbox is clicked', async () => {
+    const user = userEvent.setup();
+    const onToggleReminders = vi.fn();
+
+    render(
+      <SettingsPage {...defaultProps} onToggleReminders={onToggleReminders} />,
+    );
+
+    await user.click(
+      screen.getByRole('checkbox', { name: /due date reminders/i }),
+    );
+
+    expect(onToggleReminders).toHaveBeenCalledOnce();
+  });
+
+  it('renders the description text about popup reminders', () => {
+    render(<SettingsPage {...defaultProps} />);
+
+    expect(
+      screen.getByText(
+        /show popup reminders for tasks that are overdue or due soon/i,
+      ),
     ).toBeInTheDocument();
   });
 });

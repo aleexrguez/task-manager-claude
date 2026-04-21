@@ -13,6 +13,8 @@ interface SettingsPageProps {
   userEmail: string;
   onSignOut: () => void;
   isSigningOut: boolean;
+  remindersEnabled: boolean;
+  onToggleReminders: () => void;
 }
 
 const CARD = 'bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm';
@@ -25,6 +27,8 @@ export function SettingsPage({
   userEmail,
   onSignOut,
   isSigningOut,
+  remindersEnabled,
+  onToggleReminders,
 }: SettingsPageProps) {
   return (
     <div className="space-y-6">
@@ -58,7 +62,26 @@ export function SettingsPage({
         </label>
       </section>
 
-      {/* Section 3 — Account */}
+      {/* Section 3 — Notifications */}
+      <section className={CARD}>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+          Notifications
+        </h2>
+        <label className="flex items-center gap-3 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={remindersEnabled}
+            onChange={onToggleReminders}
+            className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+          />
+          Due date reminders
+        </label>
+        <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+          Show popup reminders for tasks that are overdue or due soon.
+        </p>
+      </section>
+
+      {/* Section 4 — Account */}
       <section className={CARD}>
         <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
           Account

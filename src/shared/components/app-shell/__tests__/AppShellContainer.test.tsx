@@ -39,6 +39,20 @@ vi.mock('@/features/recurrences/hooks/use-auto-generate', () => ({
   useAutoGenerate: vi.fn(),
 }));
 
+vi.mock('@/features/task-manager/store/reminder.store', () => ({
+  useReminderStore: vi.fn((selector) =>
+    selector({
+      dismissedTaskIds: new Set(),
+      dismiss: vi.fn(),
+      clearDismissed: vi.fn(),
+    }),
+  ),
+}));
+
+vi.mock('@/features/task-manager/hooks/use-due-reminders', () => ({
+  useDueReminders: () => [],
+}));
+
 const mockToggleSidebar = vi.fn();
 const mockSignOut = vi.fn();
 const mockClearQueryClient = vi.fn();
@@ -70,6 +84,8 @@ beforeEach(() => {
       setTheme: vi.fn(),
       retentionPolicy: 'never',
       setRetentionPolicy: vi.fn(),
+      remindersEnabled: true,
+      toggleReminders: vi.fn(),
     }),
   );
 
@@ -155,6 +171,8 @@ describe('AppShellContainer — sidebar collapsed state', () => {
         setTheme: vi.fn(),
         retentionPolicy: 'never',
         setRetentionPolicy: vi.fn(),
+        remindersEnabled: true,
+        toggleReminders: vi.fn(),
       }),
     );
 
