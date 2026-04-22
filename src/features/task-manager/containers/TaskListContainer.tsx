@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTasks, useDeleteTask, useUpdateTask } from '../hooks/use-tasks';
 import { useArchiveTask } from '../hooks/use-archive-task';
@@ -15,8 +15,13 @@ import type { TaskListResponse } from '../api';
 import { taskKeys } from '../hooks/task.keys';
 import { TaskFilters, TaskList, ConfirmDialog, BoardView } from '../components';
 
+const HIGHLIGHT_MS = 3000;
+const HIGHLIGHT_CLASS =
+  'ring-2 ring-indigo-500 ring-offset-2 dark:ring-offset-gray-900';
+
 export function TaskListContainer() {
   const navigate = useNavigate();
+  const location = useLocation();
   const queryClient = useQueryClient();
   const { data, isLoading, isError, error, refetch } = useTasks();
   const {
@@ -41,6 +46,38 @@ export function TaskListContainer() {
   const toggleShowArchived = useTaskUIStore((s) => s.toggleShowArchived);
   const openEditModal = useTaskUIStore((s) => s.openEditModal);
   const openCreateModal = useTaskUIStore((s) => s.openCreateModal);
+
+  // Scroll to and highlight a task when navigated from a reminder
+  const highlightTaskId = (location.state as { highlightTaskId?: string })
+    ?.highlightTaskId;
+
+  useEffect(() => {
+    if (!highlightTaskId) return;
+
+    // Clear router state so refresh/back doesn't re-trigger
+    navigate(location.pathname, { replace: true, state: {} });
+
+    // Wait for DOM to settle after navigation
+    const raf = requestAnimationFrame(() => {
+      const el = document.querySelector(
+        `[data-task-id="${CSS.escape(highlightTaskId)}"]`,
+      );
+      if (!el) return;
+
+      el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+      for (const cls of HIGHLIGHT_CLASS.split(' ')) {
+        el.classList.add(cls);
+      }
+      setTimeout(() => {
+        for (const cls of HIGHLIGHT_CLASS.split(' ')) {
+          el.classList.remove(cls);
+        }
+      }, HIGHLIGHT_MS);
+    });
+
+    return () => cancelAnimationFrame(raf);
+  }, [highlightTaskId, navigate, location.pathname]);
 
   const filteredTasks = useMemo(() => {
     const allTasks = data?.tasks ?? [];

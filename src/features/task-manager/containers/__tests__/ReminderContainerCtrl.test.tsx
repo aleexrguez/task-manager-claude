@@ -106,7 +106,9 @@ describe('ReminderContainerCtrl — navigation', () => {
 
     await user.click(screen.getByText('Navigate task'));
 
-    expect(mockNavigate).toHaveBeenCalledWith('/app/tasks');
+    expect(mockNavigate).toHaveBeenCalledWith('/app/tasks', {
+      state: { highlightTaskId: 'task-1' },
+    });
   });
 
   it('navigates to /app/tasks when "+N more" is clicked', async () => {

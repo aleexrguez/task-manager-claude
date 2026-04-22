@@ -64,7 +64,9 @@ export function ReminderContainerCtrl({ tasks }: { tasks: Task[] }) {
     <ReminderContainer
       reminders={reminders}
       onDismiss={dismiss}
-      onClick={() => navigate('/app/tasks')}
+      onClick={(taskId) =>
+        navigate('/app/tasks', { state: { highlightTaskId: taskId } })
+      }
       onClickMore={() => navigate('/app/tasks')}
     />
   );

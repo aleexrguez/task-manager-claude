@@ -35,6 +35,7 @@ export function TaskCard({
 
   return (
     <div
+      data-task-id={task.id}
       role="article"
       tabIndex={onClick ? 0 : undefined}
       onClick={onClick ? () => onClick(task.id) : undefined}
