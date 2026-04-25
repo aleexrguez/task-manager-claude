@@ -4,7 +4,7 @@ import { Toast } from './Toast';
 
 const AUTO_DISMISS_MS = 4000;
 
-export function ToastContainer(): JSX.Element {
+export function ToastContainer() {
   const toasts = useToastStore((state) => state.toasts);
   const removeToast = useToastStore((state) => state.removeToast);
 

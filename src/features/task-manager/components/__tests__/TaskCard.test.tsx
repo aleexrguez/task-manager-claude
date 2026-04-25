@@ -10,6 +10,8 @@ const mockTask: Task = {
   description: 'Users cannot log in with email containing plus signs',
   status: 'in-progress',
   priority: 'high',
+  isArchived: false,
+  position: 0,
   createdAt: '2026-03-15T10:00:00.000Z',
   updatedAt: '2026-03-20T15:30:00.000Z',
 };
@@ -21,7 +23,7 @@ describe('TaskCard', () => {
 
     render(<TaskCard task={mockTask} onClick={onClick} />);
 
-    await user.click(screen.getByRole('article'));
+    await user.click(screen.getByRole('button', { name: 'Fix login bug' }));
 
     expect(onClick).toHaveBeenCalledOnce();
     expect(onClick).toHaveBeenCalledWith('task-uuid-001');
@@ -71,6 +73,7 @@ describe('TaskCard — Block 1 features', () => {
     status: 'in-progress',
     priority: 'medium',
     isArchived: false,
+    position: 0,
     createdAt: '2026-04-01T10:00:00.000Z',
     updatedAt: '2026-04-01T10:00:00.000Z',
   };
@@ -187,6 +190,7 @@ describe('TaskCard — recurring task behavior', () => {
     status: 'todo',
     priority: 'medium',
     isArchived: false,
+    position: 0,
     createdAt: '2026-04-17T08:00:00.000Z',
     updatedAt: '2026-04-17T08:00:00.000Z',
     recurrenceTemplateId: 'template-uuid-001',
@@ -199,6 +203,7 @@ describe('TaskCard — recurring task behavior', () => {
     status: 'todo',
     priority: 'medium',
     isArchived: false,
+    position: 0,
     createdAt: '2026-04-17T08:00:00.000Z',
     updatedAt: '2026-04-17T08:00:00.000Z',
   };

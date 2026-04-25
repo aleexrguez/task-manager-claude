@@ -24,29 +24,13 @@ export function TaskCard({
   const formattedDate = new Date(task.createdAt).toLocaleDateString();
   const recurring = isGeneratedTask(task);
 
-  function handleKeyDown(event: React.KeyboardEvent<HTMLDivElement>): void {
-    if (!onClick) return;
-    if (event.target !== event.currentTarget) return;
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      onClick(task.id);
-    }
-  }
-
-  return (
-    <div
-      data-task-id={task.id}
-      role="article"
-      tabIndex={onClick ? 0 : undefined}
-      onClick={onClick ? () => onClick(task.id) : undefined}
-      onKeyDown={onClick ? handleKeyDown : undefined}
-      className={`group rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-md dark:border-gray-700 dark:bg-gray-800 dark:hover:border-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900${onClick ? ' cursor-pointer' : ''}`}
-    >
+  const cardContent = (
+    <>
       <div className="mb-2 flex items-start justify-between gap-2">
         <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
           {task.title}
         </h3>
-        <div className="flex shrink-0 gap-1 opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100">
+        <div className="pointer-events-auto flex shrink-0 gap-1 opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100">
           {onEdit && (
             <button
               onClick={(e) => {
@@ -113,6 +97,32 @@ export function TaskCard({
           {new Date(task.completedAt).toLocaleString()}
         </div>
       )}
+    </>
+  );
+
+  if (onClick) {
+    return (
+      <div
+        data-task-id={task.id}
+        className="group relative cursor-pointer rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-md dark:border-gray-700 dark:bg-gray-800 dark:hover:border-indigo-700"
+      >
+        <button
+          type="button"
+          onClick={() => onClick(task.id)}
+          className="absolute inset-0 z-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
+          aria-label={task.title}
+        />
+        <div className="pointer-events-none relative">{cardContent}</div>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      data-task-id={task.id}
+      className="group rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-md dark:border-gray-700 dark:bg-gray-800 dark:hover:border-indigo-700"
+    >
+      {cardContent}
     </div>
   );
 }

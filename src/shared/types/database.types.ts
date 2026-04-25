@@ -50,6 +50,7 @@ export interface Database {
           recurrence_date_key?: string | null;
           position?: number;
         };
+        Relationships: [];
       };
       recurrence_templates: {
         Row: {
@@ -94,6 +95,7 @@ export interface Database {
           created_at?: string;
           updated_at?: string;
         };
+        Relationships: [];
       };
     };
     Views: Record<string, never>;

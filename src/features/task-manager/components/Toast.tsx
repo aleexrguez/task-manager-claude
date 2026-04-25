@@ -15,12 +15,7 @@ const colorClasses: Record<ToastType, string> = {
   info: 'border-blue-500 bg-blue-50 text-blue-900 dark:bg-blue-950 dark:text-blue-100',
 };
 
-export function Toast({
-  id,
-  message,
-  type,
-  onDismiss,
-}: ToastProps): JSX.Element {
+export function Toast({ id, message, type, onDismiss }: ToastProps) {
   const role = type === 'error' ? 'alert' : 'status';
 
   return (

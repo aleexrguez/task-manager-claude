@@ -45,6 +45,7 @@ function makeTask(overrides: Partial<Task>): Task {
     status: 'todo',
     priority: 'medium',
     isArchived: false,
+    position: 0,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     ...overrides,

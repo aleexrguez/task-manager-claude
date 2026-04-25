@@ -49,7 +49,7 @@ export function ReminderToast({
   onDismiss,
   onClick,
   onClickMore,
-}: ReminderToastProps): JSX.Element {
+}: ReminderToastProps) {
   const { tier, topTask, extraCount } = reminder;
   const role = tier === 'critical' ? 'alert' : 'status';
   const dayLabel = getDayLabel(topTask.daysRemaining);

@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
 import type { Task } from '../../types';
@@ -12,6 +12,7 @@ function makeTask(overrides: Partial<Task> = {}): Task {
     status: 'todo',
     priority: 'medium',
     isArchived: false,
+    position: 0,
     createdAt: '2026-01-10T10:00:00.000Z',
     updatedAt: '2026-01-10T10:00:00.000Z',
     ...overrides,
@@ -99,8 +100,7 @@ describe('BoardView', () => {
 
     render(<BoardView board={board} onEdit={onEdit} />);
 
-    const article = screen.getByRole('article');
-    await user.click(within(article).getByRole('button', { name: /edit/i }));
+    await user.click(screen.getByRole('button', { name: 'Edit' }));
 
     expect(onEdit).toHaveBeenCalledOnce();
     expect(onEdit).toHaveBeenCalledWith('task-xyz');

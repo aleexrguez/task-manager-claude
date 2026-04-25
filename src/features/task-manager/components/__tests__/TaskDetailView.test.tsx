@@ -10,6 +10,8 @@ const mockTask: Task = {
   description: 'This is a test description',
   status: 'in-progress',
   priority: 'high',
+  isArchived: false,
+  position: 0,
   createdAt: '2026-03-15T10:00:00.000Z',
   updatedAt: '2026-03-20T15:30:00.000Z',
 };
@@ -185,6 +187,7 @@ describe('TaskDetailView — Block 1 fields', () => {
     status: 'in-progress',
     priority: 'medium',
     isArchived: false,
+    position: 0,
     createdAt: '2026-04-01T10:00:00.000Z',
     updatedAt: '2026-04-01T10:00:00.000Z',
   };
@@ -261,6 +264,7 @@ describe('TaskDetailView — inline editing', () => {
     status: 'todo',
     priority: 'medium',
     isArchived: false,
+    position: 0,
     createdAt: '2026-04-01T10:00:00.000Z',
     updatedAt: '2026-04-01T10:00:00.000Z',
   };
@@ -367,6 +371,7 @@ describe('TaskDetailView — recurrence info', () => {
     status: 'todo',
     priority: 'low',
     isArchived: false,
+    position: 0,
     createdAt: '2026-04-01T10:00:00.000Z',
     updatedAt: '2026-04-01T10:00:00.000Z',
   };

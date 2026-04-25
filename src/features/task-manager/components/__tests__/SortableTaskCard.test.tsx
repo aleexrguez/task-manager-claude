@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {
   DndContext,
@@ -21,6 +21,7 @@ function makeTask(overrides: Partial<Task> = {}): Task {
     status: 'todo',
     priority: 'medium',
     isArchived: false,
+    position: 0,
     createdAt: '2026-01-10T10:00:00.000Z',
     updatedAt: '2026-01-10T10:00:00.000Z',
     ...overrides,
@@ -60,10 +61,12 @@ describe('SortableTaskCard', () => {
     expect(screen.getByText('Sortable Task')).toBeInTheDocument();
   });
 
-  it('renders the inner TaskCard as an article', () => {
-    renderSortable(<SortableTaskCard task={makeTask()} />);
+  it('renders the inner TaskCard with data-task-id', () => {
+    const { container } = renderSortable(
+      <SortableTaskCard task={makeTask()} />,
+    );
 
-    expect(screen.getByRole('article')).toBeInTheDocument();
+    expect(container.querySelector('[data-task-id]')).toBeInTheDocument();
   });
 
   it('has sortable role on the wrapper', () => {
@@ -93,9 +96,7 @@ describe('SortableTaskCard', () => {
 
     renderSortable(<SortableTaskCard task={makeTask()} onEdit={onEdit} />);
 
-    // Scope to the article to avoid matching the sortable wrapper (also role="button")
-    const article = screen.getByRole('article');
-    await user.click(within(article).getByRole('button', { name: /edit/i }));
+    await user.click(screen.getByRole('button', { name: 'Edit' }));
 
     expect(onEdit).toHaveBeenCalledOnce();
     expect(onEdit).toHaveBeenCalledWith('task-sort-1');
@@ -107,8 +108,7 @@ describe('SortableTaskCard', () => {
 
     renderSortable(<SortableTaskCard task={makeTask()} onDelete={onDelete} />);
 
-    const article = screen.getByRole('article');
-    await user.click(within(article).getByRole('button', { name: /delete/i }));
+    await user.click(screen.getByRole('button', { name: 'Delete' }));
 
     expect(onDelete).toHaveBeenCalledOnce();
     expect(onDelete).toHaveBeenCalledWith('task-sort-1');
@@ -127,8 +127,7 @@ describe('SortableTaskCard', () => {
       'task-done-1',
     ]);
 
-    const article = screen.getByRole('article');
-    await user.click(within(article).getByRole('button', { name: /archive/i }));
+    await user.click(screen.getByRole('button', { name: 'Archive' }));
 
     expect(onArchive).toHaveBeenCalledOnce();
     expect(onArchive).toHaveBeenCalledWith('task-done-1');

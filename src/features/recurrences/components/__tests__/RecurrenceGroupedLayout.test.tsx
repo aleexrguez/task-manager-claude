@@ -12,6 +12,7 @@ function makeTemplate(
     title: 'Test template',
     priority: 'medium',
     frequency: 'daily',
+    leadTimeDays: 0,
     isActive: true,
     createdAt: '2026-01-10T10:00:00.000Z',
     updatedAt: '2026-01-10T10:00:00.000Z',

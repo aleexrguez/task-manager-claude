@@ -1,4 +1,4 @@
-import { useEffect, useRef, type KeyboardEvent } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 interface ConfirmDialogProps {
   isOpen: boolean;
@@ -24,11 +24,50 @@ export function ConfirmDialog({
   const dialogRef = useRef<HTMLDivElement>(null);
   const cancelButtonRef = useRef<HTMLButtonElement>(null);
 
+  const getFocusableElements = useCallback((): HTMLElement[] => {
+    if (!dialogRef.current) return [];
+    return Array.from(
+      dialogRef.current.querySelectorAll<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+      ),
+    ).filter((el) => !el.hasAttribute('disabled'));
+  }, []);
+
   useEffect(() => {
-    if (isOpen) {
-      cancelButtonRef.current?.focus();
+    if (!isOpen) return;
+
+    cancelButtonRef.current?.focus();
+
+    function handleKeyDown(event: KeyboardEvent): void {
+      if (event.key === 'Escape') {
+        if (!isLoading) onCancel();
+        return;
+      }
+
+      if (event.key === 'Tab') {
+        const focusable = getFocusableElements();
+        if (focusable.length === 0) return;
+
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+
+        if (event.shiftKey) {
+          if (document.activeElement === first) {
+            event.preventDefault();
+            last.focus();
+          }
+        } else {
+          if (document.activeElement === last) {
+            event.preventDefault();
+            first.focus();
+          }
+        }
+      }
     }
-  }, [isOpen]);
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, isLoading, onCancel, getFocusableElements]);
 
   if (!isOpen) return null;
 
@@ -36,42 +75,6 @@ export function ConfirmDialog({
     variant === 'danger'
       ? 'rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800'
       : 'rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800';
-
-  function getFocusableElements(): HTMLElement[] {
-    if (!dialogRef.current) return [];
-    return Array.from(
-      dialogRef.current.querySelectorAll<HTMLElement>(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
-      ),
-    ).filter((el) => !el.hasAttribute('disabled'));
-  }
-
-  function handleKeyDown(event: KeyboardEvent<HTMLDivElement>): void {
-    if (event.key === 'Escape') {
-      if (!isLoading) onCancel();
-      return;
-    }
-
-    if (event.key === 'Tab') {
-      const focusable = getFocusableElements();
-      if (focusable.length === 0) return;
-
-      const first = focusable[0];
-      const last = focusable[focusable.length - 1];
-
-      if (event.shiftKey) {
-        if (document.activeElement === first) {
-          event.preventDefault();
-          last.focus();
-        }
-      } else {
-        if (document.activeElement === last) {
-          event.preventDefault();
-          first.focus();
-        }
-      }
-    }
-  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
@@ -81,7 +84,6 @@ export function ConfirmDialog({
         aria-modal="true"
         aria-labelledby="confirm-dialog-title"
         aria-describedby="confirm-dialog-description"
-        onKeyDown={handleKeyDown}
         className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl dark:bg-gray-800"
       >
         <div className="mb-4 flex items-center justify-between">

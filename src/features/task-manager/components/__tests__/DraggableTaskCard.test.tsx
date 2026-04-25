@@ -12,6 +12,7 @@ function makeTask(overrides: Partial<Task> = {}): Task {
     status: 'todo',
     priority: 'medium',
     isArchived: false,
+    position: 0,
     createdAt: '2026-01-10T10:00:00.000Z',
     updatedAt: '2026-01-10T10:00:00.000Z',
     ...overrides,
@@ -37,10 +38,12 @@ describe('DraggableTaskCard', () => {
     expect(handle).toHaveAttribute('aria-roledescription', 'draggable');
   });
 
-  it('renders the inner TaskCard as an article', () => {
-    renderWithDndContext(<DraggableTaskCard task={makeTask()} />);
+  it('renders the inner TaskCard with data-task-id', () => {
+    const { container } = renderWithDndContext(
+      <DraggableTaskCard task={makeTask()} />,
+    );
 
-    expect(screen.getByRole('article')).toBeInTheDocument();
+    expect(container.querySelector('[data-task-id]')).toBeInTheDocument();
   });
 
   it('renders tasks of any status', () => {

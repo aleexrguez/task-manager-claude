@@ -13,7 +13,7 @@ export function ReminderContainer({
   onDismiss,
   onClick,
   onClickMore,
-}: ReminderContainerProps): JSX.Element | null {
+}: ReminderContainerProps) {
   if (reminders.length === 0) return null;
 
   return (

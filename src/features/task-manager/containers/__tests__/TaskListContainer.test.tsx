@@ -43,7 +43,9 @@ vi.mock('../../components', async (importOriginal) => {
       [key: string]: unknown;
     }) => {
       capturedOnBoardChange = props.onBoardChange;
-      return actual.BoardView(props as Parameters<typeof actual.BoardView>[0]);
+      return actual.BoardView(
+        props as unknown as Parameters<typeof actual.BoardView>[0],
+      );
     },
   };
 });
@@ -68,6 +70,7 @@ function makeTask(overrides: Partial<Task> = {}): Task {
     status: 'todo',
     priority: 'medium',
     isArchived: false,
+    position: 0,
     createdAt: '2026-01-10T10:00:00.000Z',
     updatedAt: '2026-01-10T10:00:00.000Z',
     ...overrides,
@@ -137,9 +140,9 @@ describe('TaskListContainer — Block 1 features', () => {
 
     expect(screen.getByText('High priority')).toBeInTheDocument();
     expect(screen.getByText('Low priority')).toBeInTheDocument();
-    // TaskCard renders as article role
-    const articles = screen.getAllByRole('article');
-    expect(articles.length).toBeGreaterThan(0);
+    // TaskCard renders with data-task-id attribute
+    const taskCards = document.querySelectorAll('[data-task-id]');
+    expect(taskCards.length).toBeGreaterThan(0);
   });
 
   it('renders BoardView when viewMode is board', async () => {
@@ -214,8 +217,8 @@ describe('TaskListContainer — Block 1 features', () => {
       expect(screen.getByText('Newer medium task')).toBeInTheDocument();
     });
 
-    const articles = screen.getAllByRole('article');
-    const titles = articles.map(
+    const taskCards = document.querySelectorAll('[data-task-id]');
+    const titles = Array.from(taskCards).map(
       (el) => el.querySelector('h3')?.textContent ?? '',
     );
     const newerIndex = titles.findIndex((t) => t === 'Newer medium task');
@@ -237,7 +240,7 @@ describe('TaskListContainer — Block 1 features', () => {
     // Archive button is only visible on hover/focus — we need to find it within the done task card
     const doneTaskCard = screen
       .getByText('Done task')
-      .closest('[role="article"]');
+      .closest('[data-task-id]');
     expect(doneTaskCard).not.toBeNull();
 
     // Focus the card to make buttons visible

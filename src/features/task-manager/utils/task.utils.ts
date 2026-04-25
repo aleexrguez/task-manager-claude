@@ -19,6 +19,7 @@ export function createLocalTask(input: CreateTaskInput): Task {
     createdAt: now,
     updatedAt: now,
     position: 0,
+    isArchived: false,
   };
 }
 

@@ -10,7 +10,7 @@ import {
 } from '@dnd-kit/core';
 import type { DragOverEvent, DragStartEvent } from '@dnd-kit/core';
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
-import type { Task } from '../types';
+import type { Task, TaskStatus } from '../types';
 import type { TaskBoard } from '../utils';
 import { BoardColumn } from './BoardColumn';
 import { TaskCard } from './TaskCard';

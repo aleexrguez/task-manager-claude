@@ -231,6 +231,7 @@ describe('createRecurrence — toDbInsert mapping', () => {
     await createRecurrence({
       frequency: 'daily',
       title: 'Daily standup',
+      priority: 'medium',
     });
 
     expect(mockInsert).toHaveBeenCalledWith(
@@ -258,6 +259,7 @@ describe('createRecurrence — toDbInsert mapping', () => {
     await createRecurrence({
       frequency: 'weekly',
       title: 'Weekly review',
+      priority: 'medium',
       weeklyDays: [1, 3],
     });
 
@@ -290,6 +292,7 @@ describe('createRecurrence — toDbInsert mapping', () => {
     await createRecurrence({
       frequency: 'monthly',
       title: 'Monthly report',
+      priority: 'medium',
       monthlyDay: 15,
       leadTimeDays: 5,
     });
@@ -319,6 +322,7 @@ describe('createRecurrence — toDbInsert mapping', () => {
     await createRecurrence({
       frequency: 'daily',
       title: 'Daily standup',
+      priority: 'medium',
     });
 
     expect(mockInsert).toHaveBeenCalledWith(
@@ -344,7 +348,9 @@ describe('createRecurrence — toDbInsert mapping', () => {
     await createRecurrence({
       frequency: 'monthly',
       title: 'Monthly report',
+      priority: 'medium',
       monthlyDay: 15,
+      leadTimeDays: 0,
     });
 
     expect(mockInsert).toHaveBeenCalledWith(
@@ -488,7 +494,11 @@ describe('CRUD operations', () => {
     );
 
     await expect(
-      createRecurrence({ frequency: 'daily', title: 'Failing' }),
+      createRecurrence({
+        frequency: 'daily',
+        title: 'Failing',
+        priority: 'medium',
+      }),
     ).rejects.toThrow('Insert failed');
   });
 });
