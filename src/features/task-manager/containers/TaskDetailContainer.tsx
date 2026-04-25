@@ -1,13 +1,17 @@
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useTask, useDeleteTask } from '../hooks/use-tasks';
-import { useTaskUIStore } from '../store/task-ui.store';
+import { useTask, useDeleteTask, useUpdateTask } from '../hooks/use-tasks';
 import { useToastStore } from '../store/toast.store';
 import { TaskDetailView } from '../components/TaskDetailView';
 import { TaskNotFound } from '../components/TaskNotFound';
 import { TaskErrorState } from '../components/TaskErrorState';
 import { ConfirmDialog } from '../components/ConfirmDialog';
-import { EditTaskContainer } from './EditTaskContainer';
+import {
+  isGeneratedTask,
+  formatFrequencyLabel,
+} from '@/features/recurrences/utils/recurrence.utils';
+import { useRecurrence } from '@/features/recurrences/hooks/use-recurrences';
+import type { CreateTaskInput } from '../types';
 
 export function TaskDetailContainer() {
   const { id = '' } = useParams<{ id: string }>();
@@ -15,21 +19,48 @@ export function TaskDetailContainer() {
 
   const { data: task, isLoading, isError, error, refetch } = useTask(id);
 
-  const openEditModal = useTaskUIStore((s) => s.openEditModal);
   const addToast = useToastStore((s) => s.addToast);
 
   const { mutate: deleteTask, isPending: isDeleting } = useDeleteTask();
+  const { mutate: updateTask, isPending: isUpdating } = useUpdateTask();
 
   const [showConfirm, setShowConfirm] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+
+  const recurring = task ? isGeneratedTask(task) : false;
+  const { data: recurrenceTemplate } = useRecurrence(
+    task?.recurrenceTemplateId ?? '',
+  );
+  const frequencyLabel = recurrenceTemplate
+    ? formatFrequencyLabel(recurrenceTemplate)
+    : undefined;
 
   function handleBack(): void {
     navigate('/app');
   }
 
   function handleEdit(): void {
-    if (task) {
-      openEditModal(task.id);
-    }
+    setIsEditing(true);
+  }
+
+  function handleSave(data: CreateTaskInput): void {
+    if (!task) return;
+    updateTask(
+      { id: task.id, input: data },
+      {
+        onSuccess: () => {
+          addToast('Task updated', 'success');
+          setIsEditing(false);
+        },
+        onError: () => {
+          addToast('Failed to update task', 'error');
+        },
+      },
+    );
+  }
+
+  function handleCancel(): void {
+    setIsEditing(false);
   }
 
   function handleDeleteRequest(): void {
@@ -92,6 +123,12 @@ export function TaskDetailContainer() {
           onEdit={handleEdit}
           onDelete={handleDeleteRequest}
           onBack={handleBack}
+          isEditing={isEditing}
+          onSave={handleSave}
+          onCancel={handleCancel}
+          isSubmitting={isUpdating}
+          isRecurring={recurring}
+          frequencyLabel={frequencyLabel}
         />
       );
     }
@@ -114,7 +151,6 @@ export function TaskDetailContainer() {
         onConfirm={handleConfirmDelete}
         onCancel={handleCancelDelete}
       />
-      <EditTaskContainer />
     </div>
   );
 }

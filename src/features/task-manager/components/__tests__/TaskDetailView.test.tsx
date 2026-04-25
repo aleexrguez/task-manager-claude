@@ -252,3 +252,180 @@ describe('TaskDetailView — Block 1 fields', () => {
     expect(screen.queryByText(/Completed/)).not.toBeInTheDocument();
   });
 });
+
+describe('TaskDetailView — inline editing', () => {
+  const editingTask: Task = {
+    id: 'edit-uuid-123',
+    title: 'Editable Task',
+    description: 'Some description',
+    status: 'todo',
+    priority: 'medium',
+    isArchived: false,
+    createdAt: '2026-04-01T10:00:00.000Z',
+    updatedAt: '2026-04-01T10:00:00.000Z',
+  };
+
+  it('shows TaskForm when isEditing is true', () => {
+    render(
+      <TaskDetailView
+        task={editingTask}
+        onEdit={vi.fn()}
+        onDelete={vi.fn()}
+        onBack={vi.fn()}
+        isEditing={true}
+        onSave={vi.fn()}
+        onCancel={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByLabelText(/title/i)).toBeInTheDocument();
+    expect(
+      screen.queryByRole('heading', { name: editingTask.title }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('hides Edit and Delete buttons when isEditing is true', () => {
+    render(
+      <TaskDetailView
+        task={editingTask}
+        onEdit={vi.fn()}
+        onDelete={vi.fn()}
+        onBack={vi.fn()}
+        isEditing={true}
+        onSave={vi.fn()}
+        onCancel={vi.fn()}
+      />,
+    );
+
+    expect(screen.queryByRole('button', { name: /edit/i })).toBeNull();
+    expect(screen.queryByRole('button', { name: /delete/i })).toBeNull();
+  });
+
+  it('shows Cancel button when isEditing is true and calls onCancel on click', async () => {
+    const onCancel = vi.fn();
+    const user = userEvent.setup();
+
+    render(
+      <TaskDetailView
+        task={editingTask}
+        onEdit={vi.fn()}
+        onDelete={vi.fn()}
+        onBack={vi.fn()}
+        isEditing={true}
+        onSave={vi.fn()}
+        onCancel={onCancel}
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: /cancel/i }));
+
+    expect(onCancel).toHaveBeenCalledOnce();
+  });
+
+  it('calls onSave when form is submitted in edit mode', async () => {
+    const onSave = vi.fn();
+    const user = userEvent.setup();
+
+    render(
+      <TaskDetailView
+        task={editingTask}
+        onEdit={vi.fn()}
+        onDelete={vi.fn()}
+        onBack={vi.fn()}
+        isEditing={true}
+        onSave={onSave}
+        onCancel={vi.fn()}
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: /save changes/i }));
+
+    expect(onSave).toHaveBeenCalledOnce();
+  });
+
+  it('shows view mode by default when isEditing is not provided', () => {
+    render(
+      <TaskDetailView
+        task={editingTask}
+        onEdit={vi.fn()}
+        onDelete={vi.fn()}
+        onBack={vi.fn()}
+      />,
+    );
+
+    expect(
+      screen.getByRole('heading', { name: editingTask.title }),
+    ).toBeInTheDocument();
+    expect(screen.queryByLabelText(/title/i)).toBeNull();
+  });
+});
+
+describe('TaskDetailView — recurrence info', () => {
+  const recurringTask: Task = {
+    id: 'recur-uuid-123',
+    title: 'Recurring Task',
+    status: 'todo',
+    priority: 'low',
+    isArchived: false,
+    createdAt: '2026-04-01T10:00:00.000Z',
+    updatedAt: '2026-04-01T10:00:00.000Z',
+  };
+
+  it('shows Recurring badge when isRecurring is true', () => {
+    render(
+      <TaskDetailView
+        task={recurringTask}
+        onEdit={vi.fn()}
+        onDelete={vi.fn()}
+        onBack={vi.fn()}
+        isRecurring={true}
+      />,
+    );
+
+    expect(screen.getByText('Recurring')).toBeInTheDocument();
+  });
+
+  it('shows frequency label when frequencyLabel is provided', () => {
+    render(
+      <TaskDetailView
+        task={recurringTask}
+        onEdit={vi.fn()}
+        onDelete={vi.fn()}
+        onBack={vi.fn()}
+        isRecurring={true}
+        frequencyLabel="Weekly (Mon, Wed)"
+      />,
+    );
+
+    expect(screen.getByText('Weekly (Mon, Wed)')).toBeInTheDocument();
+  });
+
+  it('does not show Recurring badge when isRecurring is false or not provided', () => {
+    render(
+      <TaskDetailView
+        task={recurringTask}
+        onEdit={vi.fn()}
+        onDelete={vi.fn()}
+        onBack={vi.fn()}
+      />,
+    );
+
+    expect(screen.queryByText('Recurring')).not.toBeInTheDocument();
+  });
+
+  it('does not show frequency label when frequencyLabel is not provided', () => {
+    render(
+      <TaskDetailView
+        task={recurringTask}
+        onEdit={vi.fn()}
+        onDelete={vi.fn()}
+        onBack={vi.fn()}
+        isRecurring={true}
+      />,
+    );
+
+    // Badge renders but no frequency text alongside it
+    expect(screen.getByText('Recurring')).toBeInTheDocument();
+    expect(screen.queryByText(/weekly|daily|monthly/i)).not.toBeInTheDocument();
+  });
+});

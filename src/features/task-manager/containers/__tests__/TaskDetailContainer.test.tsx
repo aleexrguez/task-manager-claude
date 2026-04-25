@@ -3,7 +3,6 @@ import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { vi, type MockedFunction } from 'vitest';
-import { useTaskUIStore } from '../../store/task-ui.store';
 import { useToastStore } from '../../store/toast.store';
 import type { Task } from '../../types';
 import { TaskDetailContainer } from '../TaskDetailContainer';
@@ -24,10 +23,32 @@ vi.mock('@/features/task-manager/api', () => ({
   deleteTask: vi.fn(),
 }));
 
-import { fetchTaskById, deleteTask } from '@/features/task-manager/api';
+vi.mock('@/features/recurrences/hooks/use-recurrences', () => ({
+  useRecurrence: vi.fn(() => ({ data: undefined })),
+}));
+
+vi.mock('@/features/recurrences/utils/recurrence.utils', () => ({
+  isGeneratedTask: vi.fn(() => false),
+  formatFrequencyLabel: vi.fn(() => ''),
+}));
+
+vi.mock('@/features/recurrences/api/recurrence-api', () => ({
+  fetchRecurrences: vi.fn(),
+  fetchRecurrenceById: vi.fn(),
+  createRecurrence: vi.fn(),
+  updateRecurrence: vi.fn(),
+  deleteRecurrence: vi.fn(),
+}));
+
+import {
+  fetchTaskById,
+  deleteTask,
+  updateTask,
+} from '@/features/task-manager/api';
 
 const mockFetchTaskById = fetchTaskById as MockedFunction<typeof fetchTaskById>;
 const mockDeleteTask = deleteTask as MockedFunction<typeof deleteTask>;
+const mockUpdateTask = updateTask as MockedFunction<typeof updateTask>;
 
 const mockTask: Task = {
   id: 'task-uuid-001',
@@ -37,6 +58,8 @@ const mockTask: Task = {
   priority: 'high',
   createdAt: '2026-03-15T10:00:00.000Z',
   updatedAt: '2026-03-20T15:30:00.000Z',
+  position: 0,
+  isArchived: false,
 };
 
 function renderWithProviders(taskId: string) {
@@ -58,10 +81,6 @@ function renderWithProviders(taskId: string) {
 
 describe('TaskDetailContainer', () => {
   beforeEach(() => {
-    useTaskUIStore.setState({
-      isEditModalOpen: false,
-      selectedTaskId: null,
-    });
     useToastStore.setState({ toasts: [] });
     vi.clearAllMocks();
   });
@@ -115,19 +134,111 @@ describe('TaskDetailContainer', () => {
     expect(mockFetchTaskById).toHaveBeenCalledTimes(2);
   });
 
-  it('opens edit modal when Edit button is clicked', async () => {
+  it('activates inline editing when Edit button is clicked', async () => {
     const user = userEvent.setup();
     mockFetchTaskById.mockResolvedValue(mockTask);
 
     renderWithProviders('task-uuid-001');
-
     await screen.findByRole('heading', { name: 'Fix login bug' });
 
     await user.click(screen.getByRole('button', { name: /edit/i }));
 
-    const { isEditModalOpen, selectedTaskId } = useTaskUIStore.getState();
-    expect(isEditModalOpen).toBe(true);
-    expect(selectedTaskId).toBe('task-uuid-001');
+    // Should show form fields inline, not modal
+    expect(screen.getByLabelText(/title/i)).toBeInTheDocument();
+    // Heading should be gone (replaced by form)
+    expect(
+      screen.queryByRole('heading', { name: 'Fix login bug' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('returns to view mode when Cancel is clicked', async () => {
+    const user = userEvent.setup();
+    mockFetchTaskById.mockResolvedValue(mockTask);
+
+    renderWithProviders('task-uuid-001');
+    await screen.findByRole('heading', { name: 'Fix login bug' });
+
+    await user.click(screen.getByRole('button', { name: /edit/i }));
+    expect(screen.getByLabelText(/title/i)).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: /cancel/i }));
+    expect(
+      screen.getByRole('heading', { name: 'Fix login bug' }),
+    ).toBeInTheDocument();
+    expect(screen.queryByLabelText(/title/i)).not.toBeInTheDocument();
+  });
+
+  it('calls updateTask and returns to view mode on successful save', async () => {
+    const user = userEvent.setup();
+    mockFetchTaskById.mockResolvedValue(mockTask);
+    mockUpdateTask.mockResolvedValue(mockTask);
+
+    renderWithProviders('task-uuid-001');
+    await screen.findByRole('heading', { name: 'Fix login bug' });
+
+    await user.click(screen.getByRole('button', { name: /edit/i }));
+    await user.click(screen.getByRole('button', { name: /save changes/i }));
+
+    await waitFor(() => {
+      expect(mockUpdateTask).toHaveBeenCalled();
+    });
+    // After success, should return to view mode
+    await waitFor(() => {
+      expect(
+        screen.getByRole('heading', { name: 'Fix login bug' }),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it('shows success toast after saving', async () => {
+    const user = userEvent.setup();
+    mockFetchTaskById.mockResolvedValue(mockTask);
+    mockUpdateTask.mockResolvedValue(mockTask);
+
+    renderWithProviders('task-uuid-001');
+    await screen.findByRole('heading', { name: 'Fix login bug' });
+
+    await user.click(screen.getByRole('button', { name: /edit/i }));
+    await user.click(screen.getByRole('button', { name: /save changes/i }));
+
+    await waitFor(() => {
+      const { toasts } = useToastStore.getState();
+      expect(
+        toasts.some(
+          (t) => t.type === 'success' && t.message === 'Task updated',
+        ),
+      ).toBe(true);
+    });
+  });
+
+  it('shows error toast when save fails', async () => {
+    const user = userEvent.setup();
+    mockFetchTaskById.mockResolvedValue(mockTask);
+    mockUpdateTask.mockRejectedValue(new Error('Update failed'));
+
+    renderWithProviders('task-uuid-001');
+    await screen.findByRole('heading', { name: 'Fix login bug' });
+
+    await user.click(screen.getByRole('button', { name: /edit/i }));
+    await user.click(screen.getByRole('button', { name: /save changes/i }));
+
+    await waitFor(() => {
+      const { toasts } = useToastStore.getState();
+      expect(toasts.some((t) => t.type === 'error')).toBe(true);
+    });
+  });
+
+  it('does not open modal when Edit is clicked (no EditTaskContainer)', async () => {
+    const user = userEvent.setup();
+    mockFetchTaskById.mockResolvedValue(mockTask);
+
+    renderWithProviders('task-uuid-001');
+    await screen.findByRole('heading', { name: 'Fix login bug' });
+
+    await user.click(screen.getByRole('button', { name: /edit/i }));
+
+    // No modal overlay should exist
+    expect(document.querySelector('.fixed.inset-0')).not.toBeInTheDocument();
   });
 
   it('shows confirm dialog when Delete button is clicked', async () => {
@@ -201,5 +312,45 @@ describe('TaskDetailContainer', () => {
       expect(toasts).toHaveLength(1);
       expect(toasts[0].type).toBe('error');
     });
+  });
+
+  it('shows Recurring badge for a generated task', async () => {
+    const { isGeneratedTask } =
+      await import('@/features/recurrences/utils/recurrence.utils');
+    vi.mocked(isGeneratedTask).mockReturnValue(true);
+
+    const recurringTask = {
+      ...mockTask,
+      recurrenceTemplateId: 'tpl-1',
+      recurrenceDateKey: '2026-04-25',
+    };
+    mockFetchTaskById.mockResolvedValue(recurringTask);
+
+    renderWithProviders('task-uuid-001');
+
+    expect(await screen.findByText('Recurring')).toBeInTheDocument();
+  });
+
+  it('shows frequency label when recurrence template is loaded', async () => {
+    const { isGeneratedTask, formatFrequencyLabel } =
+      await import('@/features/recurrences/utils/recurrence.utils');
+    const { useRecurrence } =
+      await import('@/features/recurrences/hooks/use-recurrences');
+    vi.mocked(isGeneratedTask).mockReturnValue(true);
+    vi.mocked(formatFrequencyLabel).mockReturnValue('Weekly (Mon, Wed)');
+    vi.mocked(useRecurrence).mockReturnValue({
+      data: { id: 'tpl-1', frequency: 'weekly', weeklyDays: [1, 3] },
+    } as ReturnType<typeof useRecurrence>);
+
+    const recurringTask = {
+      ...mockTask,
+      recurrenceTemplateId: 'tpl-1',
+      recurrenceDateKey: '2026-04-25',
+    };
+    mockFetchTaskById.mockResolvedValue(recurringTask);
+
+    renderWithProviders('task-uuid-001');
+
+    expect(await screen.findByText('Weekly (Mon, Wed)')).toBeInTheDocument();
   });
 });
