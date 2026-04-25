@@ -314,6 +314,34 @@ describe('TaskDetailContainer', () => {
     });
   });
 
+  it('deletes a recurring task from detail and navigates to dashboard', async () => {
+    const { isGeneratedTask } =
+      await import('@/features/recurrences/utils/recurrence.utils');
+    vi.mocked(isGeneratedTask).mockReturnValue(true);
+
+    const user = userEvent.setup();
+    const recurringTask = {
+      ...mockTask,
+      recurrenceTemplateId: 'tpl-1',
+      recurrenceDateKey: '2026-04-25',
+    };
+    mockFetchTaskById.mockResolvedValue(recurringTask);
+    mockDeleteTask.mockResolvedValue(undefined);
+
+    renderWithProviders('task-uuid-001');
+
+    await screen.findByText('Recurring');
+
+    await user.click(screen.getByRole('button', { name: /delete/i }));
+    await user.click(screen.getByRole('button', { name: /^delete$/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText('Dashboard')).toBeInTheDocument();
+    });
+
+    expect(mockDeleteTask).toHaveBeenCalledWith('task-uuid-001');
+  });
+
   it('shows Recurring badge for a generated task', async () => {
     const { isGeneratedTask } =
       await import('@/features/recurrences/utils/recurrence.utils');

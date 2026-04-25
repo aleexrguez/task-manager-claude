@@ -52,68 +52,46 @@ function makeDbRow(overrides: Record<string, unknown> = {}) {
 // Group: deleteTask — delete guard
 // ---------------------------------------------------------------------------
 
-describe('deleteTask — delete guard', () => {
+describe('deleteTask', () => {
   beforeEach(() => {
     vi.mocked(supabase.from).mockReset();
   });
 
-  it('rejects deleting a generated recurring task', async () => {
-    // Arrange: task has a recurrence_date_key
-    const mockSingle = vi.fn().mockResolvedValue({
-      data: { recurrence_date_key: '2026-04-16' },
-      error: null,
-    });
-    const mockEq = vi.fn().mockReturnValue({ single: mockSingle });
-    const mockSelect = vi.fn().mockReturnValue({ eq: mockEq });
+  it('deletes a regular task', async () => {
+    const mockEq = vi.fn().mockResolvedValue({ error: null });
+    const mockDelete = vi.fn().mockReturnValue({ eq: mockEq });
 
     vi.mocked(supabase.from).mockReturnValue(
-      asFromReturn({ select: mockSelect }),
+      asFromReturn({ delete: mockDelete }),
     );
 
-    // Act & Assert
-    await expect(deleteTask('task-abc')).rejects.toThrow(
-      'Cannot delete a recurring task. Complete or archive it instead.',
-    );
-  });
-
-  it('allows deleting a regular task (no recurrence_date_key)', async () => {
-    // Arrange: fetch returns null recurrence_date_key, then delete succeeds
-    const mockDeleteEq = vi.fn().mockResolvedValue({ error: null });
-    const mockDelete = vi.fn().mockReturnValue({ eq: mockDeleteEq });
-
-    const mockSingle = vi.fn().mockResolvedValue({
-      data: { recurrence_date_key: null },
-      error: null,
-    });
-    const mockSelectEq = vi.fn().mockReturnValue({ single: mockSingle });
-    const mockSelect = vi.fn().mockReturnValue({ eq: mockSelectEq });
-
-    vi.mocked(supabase.from)
-      .mockReturnValueOnce(asFromReturn({ select: mockSelect }))
-      .mockReturnValueOnce(asFromReturn({ delete: mockDelete }));
-
-    // Act & Assert — should resolve without throwing
     await expect(deleteTask('task-abc')).resolves.toBeUndefined();
-    expect(mockDeleteEq).toHaveBeenCalledWith('id', 'task-abc');
+    expect(mockEq).toHaveBeenCalledWith('id', 'task-abc');
   });
 
-  it('throws when task is not found (fetch error)', async () => {
-    // Arrange: fetch returns an error
-    const mockSingle = vi.fn().mockResolvedValue({
-      data: null,
-      error: { message: 'Not found' },
-    });
-    const mockEq = vi.fn().mockReturnValue({ single: mockSingle });
-    const mockSelect = vi.fn().mockReturnValue({ eq: mockEq });
+  it('deletes a recurring task without rejecting', async () => {
+    const mockEq = vi.fn().mockResolvedValue({ error: null });
+    const mockDelete = vi.fn().mockReturnValue({ eq: mockEq });
 
     vi.mocked(supabase.from).mockReturnValue(
-      asFromReturn({ select: mockSelect }),
+      asFromReturn({ delete: mockDelete }),
     );
 
-    // Act & Assert
-    await expect(deleteTask('task-abc')).rejects.toThrow(
-      'Task not found: task-abc',
+    await expect(deleteTask('task-abc')).resolves.toBeUndefined();
+    expect(mockEq).toHaveBeenCalledWith('id', 'task-abc');
+  });
+
+  it('throws when supabase returns an error', async () => {
+    const mockEq = vi
+      .fn()
+      .mockResolvedValue({ error: { message: 'DB error' } });
+    const mockDelete = vi.fn().mockReturnValue({ eq: mockEq });
+
+    vi.mocked(supabase.from).mockReturnValue(
+      asFromReturn({ delete: mockDelete }),
     );
+
+    await expect(deleteTask('task-abc')).rejects.toThrow('DB error');
   });
 });
 

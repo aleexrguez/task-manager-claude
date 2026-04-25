@@ -138,21 +138,6 @@ export async function updateTask(
 export async function deleteTask(id: string): Promise<void> {
   await requireAuthenticatedUser();
 
-  // Check if this is a generated recurring task
-  const { data: existing, error: fetchError } = await supabase
-    .from('tasks')
-    .select('recurrence_date_key')
-    .eq('id', id)
-    .single();
-
-  if (fetchError || !existing) throw new Error(`Task not found: ${id}`);
-
-  if (existing.recurrence_date_key) {
-    throw new Error(
-      'Cannot delete a recurring task. Complete or archive it instead.',
-    );
-  }
-
   const { error } = await supabase.from('tasks').delete().eq('id', id);
   if (error) throw new Error(error.message);
 }
