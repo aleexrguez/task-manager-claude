@@ -17,7 +17,6 @@ import { TaskCard } from './TaskCard';
 
 interface BoardViewProps {
   board: TaskBoard;
-  onEdit?: (id: string) => void;
   onDelete?: (id: string) => void;
   onClick?: (id: string) => void;
   onArchive?: (id: string) => void;
@@ -67,7 +66,6 @@ function resolveStatus(
 
 export function BoardView({
   board,
-  onEdit,
   onDelete,
   onClick,
   onArchive,
@@ -213,7 +211,6 @@ export function BoardView({
           title="Todo"
           tasks={localBoard.todo}
           status="todo"
-          onEdit={onEdit}
           onDelete={onDelete}
           onClick={onClick}
           onArchive={onArchive}
@@ -223,7 +220,6 @@ export function BoardView({
           title="In Progress"
           tasks={localBoard['in-progress']}
           status="in-progress"
-          onEdit={onEdit}
           onDelete={onDelete}
           onClick={onClick}
           onArchive={onArchive}
@@ -233,7 +229,6 @@ export function BoardView({
           title="Done"
           tasks={localBoard.done}
           status="done"
-          onEdit={onEdit}
           onDelete={onDelete}
           onClick={onClick}
           onArchive={onArchive}

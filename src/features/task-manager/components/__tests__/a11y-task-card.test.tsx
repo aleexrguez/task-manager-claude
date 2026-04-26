@@ -54,21 +54,6 @@ describe('TaskCard keyboard accessibility', () => {
     expect(onClick).toHaveBeenCalledWith('test-id');
   });
 
-  it('does not call onClick when Enter is pressed on Edit button', async () => {
-    const user = userEvent.setup();
-    const onClick = vi.fn();
-    const onEdit = vi.fn();
-
-    render(<TaskCard task={mockTask} onClick={onClick} onEdit={onEdit} />);
-
-    const editButton = screen.getByRole('button', { name: /edit/i });
-    editButton.focus();
-    await user.keyboard('{Enter}');
-
-    expect(onClick).not.toHaveBeenCalled();
-    expect(onEdit).toHaveBeenCalledOnce();
-  });
-
   it('does not render an overlay button when onClick is not provided', () => {
     render(<TaskCard task={mockTask} />);
 

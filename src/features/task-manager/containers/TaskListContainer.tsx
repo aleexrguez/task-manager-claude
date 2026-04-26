@@ -46,7 +46,6 @@ export function TaskListContainer() {
   const setSearchQuery = useTaskUIStore((s) => s.setSearchQuery);
   const resetFilters = useTaskUIStore((s) => s.resetFilters);
   const toggleShowArchived = useTaskUIStore((s) => s.toggleShowArchived);
-  const openEditModal = useTaskUIStore((s) => s.openEditModal);
   const openCreateModal = useTaskUIStore((s) => s.openCreateModal);
 
   // Scroll to and highlight a task when navigated from a reminder
@@ -220,7 +219,6 @@ export function TaskListContainer() {
         {viewMode === 'board' ? (
           <BoardView
             board={board}
-            onEdit={openEditModal}
             onDelete={handleDelete}
             onClick={(id) => navigate(`/app/tasks/${id}`)}
             onArchive={handleArchive}
@@ -232,7 +230,6 @@ export function TaskListContainer() {
             tasks={filteredTasks}
             isLoading={isLoading}
             deletingId={isDeleting ? (deletingId ?? null) : null}
-            onEdit={openEditModal}
             onDelete={handleDelete}
             onClick={(id) => navigate(`/app/tasks/${id}`)}
             onCreateNew={openCreateModal}

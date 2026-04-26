@@ -6,7 +6,6 @@ import { DueDateDisplay } from './DueDateDisplay';
 
 interface TaskCardProps {
   task: Task;
-  onEdit?: (id: string) => void;
   onDelete?: (id: string) => void;
   onClick?: (id: string) => void;
   onArchive?: (id: string) => void;
@@ -15,7 +14,6 @@ interface TaskCardProps {
 
 export function TaskCard({
   task,
-  onEdit,
   onDelete,
   onClick,
   onArchive,
@@ -31,18 +29,6 @@ export function TaskCard({
           {task.title}
         </h3>
         <div className="pointer-events-auto flex shrink-0 gap-1 opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100">
-          {onEdit && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onEdit(task.id);
-              }}
-              disabled={isDeleting}
-              className="rounded-md px-2 py-1 text-xs font-medium text-indigo-600 hover:bg-indigo-50 disabled:cursor-not-allowed disabled:opacity-50 dark:text-indigo-400 dark:hover:bg-indigo-900/40 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
-            >
-              Edit
-            </button>
-          )}
           {!recurring && onDelete && (
             <button
               onClick={(e) => {

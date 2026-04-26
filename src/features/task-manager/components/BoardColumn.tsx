@@ -10,7 +10,6 @@ interface BoardColumnProps {
   title: string;
   tasks: Task[];
   status: TaskStatus;
-  onEdit?: (id: string) => void;
   onDelete?: (id: string) => void;
   onClick?: (id: string) => void;
   onArchive?: (id: string) => void;
@@ -21,7 +20,6 @@ export function BoardColumn({
   title,
   tasks,
   status,
-  onEdit,
   onDelete,
   onClick,
   onArchive,
@@ -58,7 +56,6 @@ export function BoardColumn({
               <SortableTaskCard
                 key={task.id}
                 task={task}
-                onEdit={onEdit}
                 onDelete={onDelete}
                 onClick={onClick}
                 onArchive={onArchive}

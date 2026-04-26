@@ -23,7 +23,6 @@ interface TaskUIState {
   setSearchQuery: (query: string) => void;
   openCreateModal: () => void;
   closeCreateModal: () => void;
-  openEditModal: (taskId: string) => void;
   closeEditModal: () => void;
   resetFilters: () => void;
   setViewMode: (mode: ViewMode) => void;
@@ -72,8 +71,6 @@ export const useTaskUIStore = create<TaskUIState>((set) => ({
   setSearchQuery: (query) => set({ searchQuery: query }),
   openCreateModal: () => set({ isCreateModalOpen: true }),
   closeCreateModal: () => set({ isCreateModalOpen: false }),
-  openEditModal: (taskId) =>
-    set({ isEditModalOpen: true, selectedTaskId: taskId }),
   closeEditModal: () => set({ isEditModalOpen: false, selectedTaskId: null }),
   resetFilters: () => set(initialFilters),
   setViewMode: (mode) =>

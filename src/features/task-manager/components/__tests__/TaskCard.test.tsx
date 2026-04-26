@@ -29,19 +29,6 @@ describe('TaskCard', () => {
     expect(onClick).toHaveBeenCalledWith('task-uuid-001');
   });
 
-  it('does not call onClick when Edit button is clicked', async () => {
-    const user = userEvent.setup();
-    const onClick = vi.fn();
-    const onEdit = vi.fn();
-
-    render(<TaskCard task={mockTask} onClick={onClick} onEdit={onEdit} />);
-
-    await user.click(screen.getByRole('button', { name: /edit/i }));
-
-    expect(onClick).not.toHaveBeenCalled();
-    expect(onEdit).toHaveBeenCalledOnce();
-  });
-
   it('does not call onClick when Delete button is clicked', async () => {
     const user = userEvent.setup();
     const onClick = vi.fn();
@@ -230,14 +217,6 @@ describe('TaskCard — recurring task behavior', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('still shows edit button for recurring tasks', () => {
-    const onEdit = vi.fn();
-
-    render(<TaskCard task={baseRecurringTask} onEdit={onEdit} />);
-
-    expect(screen.getByRole('button', { name: /edit/i })).toBeInTheDocument();
-  });
-
   it('still shows archive button for done recurring tasks', () => {
     const onArchive = vi.fn();
     const doneRecurringTask: Task = {
@@ -250,18 +229,6 @@ describe('TaskCard — recurring task behavior', () => {
     expect(
       screen.getByRole('button', { name: /archive/i }),
     ).toBeInTheDocument();
-  });
-
-  it('edit callback still works for recurring tasks', async () => {
-    const user = userEvent.setup();
-    const onEdit = vi.fn();
-
-    render(<TaskCard task={baseRecurringTask} onEdit={onEdit} />);
-
-    await user.click(screen.getByRole('button', { name: /edit/i }));
-
-    expect(onEdit).toHaveBeenCalledOnce();
-    expect(onEdit).toHaveBeenCalledWith('task-recurring-001');
   });
 
   it('archive callback still works for recurring tasks', async () => {

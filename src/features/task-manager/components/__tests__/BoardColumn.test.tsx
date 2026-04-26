@@ -74,21 +74,6 @@ describe('BoardColumn', () => {
     expect(screen.getByText(/no tasks/i)).toBeInTheDocument();
   });
 
-  it('passes onEdit callback through to TaskCard components', async () => {
-    const user = userEvent.setup();
-    const onEdit = vi.fn();
-    const tasks = [makeTask({ id: 'task-abc', title: 'Editable Task' })];
-
-    renderWithDnd(
-      <BoardColumn title="Todo" tasks={tasks} onEdit={onEdit} status="todo" />,
-    );
-
-    await user.click(screen.getByRole('button', { name: 'Edit' }));
-
-    expect(onEdit).toHaveBeenCalledOnce();
-    expect(onEdit).toHaveBeenCalledWith('task-abc');
-  });
-
   it('passes onDelete callback through to TaskCard components', async () => {
     const user = userEvent.setup();
     const onDelete = vi.fn();

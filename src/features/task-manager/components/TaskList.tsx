@@ -3,7 +3,6 @@ import { TaskCard } from './TaskCard';
 
 interface TaskListProps {
   tasks: Task[];
-  onEdit?: (id: string) => void;
   onDelete?: (id: string) => void;
   onClick?: (id: string) => void;
   onArchive?: (id: string) => void;
@@ -15,7 +14,6 @@ interface TaskListProps {
 
 export function TaskList({
   tasks,
-  onEdit,
   onDelete,
   onClick,
   onArchive,
@@ -81,7 +79,6 @@ export function TaskList({
         <TaskCard
           key={task.id}
           task={task}
-          onEdit={onEdit}
           onDelete={onDelete}
           onClick={onClick}
           onArchive={onArchive}

@@ -5,7 +5,6 @@ import { TaskCard } from './TaskCard';
 
 interface SortableTaskCardProps {
   task: Task;
-  onEdit?: (id: string) => void;
   onDelete?: (id: string) => void;
   onClick?: (id: string) => void;
   onArchive?: (id: string) => void;
@@ -14,7 +13,6 @@ interface SortableTaskCardProps {
 
 export function SortableTaskCard({
   task,
-  onEdit,
   onDelete,
   onClick,
   onArchive,
@@ -42,7 +40,6 @@ export function SortableTaskCard({
     <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
       <TaskCard
         task={task}
-        onEdit={onEdit}
         onDelete={onDelete}
         onClick={onClick}
         onArchive={onArchive}

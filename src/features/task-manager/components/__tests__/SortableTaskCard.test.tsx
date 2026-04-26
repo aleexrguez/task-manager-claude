@@ -90,18 +90,6 @@ describe('SortableTaskCard', () => {
     expect(screen.getByText('In Progress Task')).toBeInTheDocument();
   });
 
-  it('does not block edit button clicks (PointerSensor distance guard)', async () => {
-    const user = userEvent.setup();
-    const onEdit = vi.fn();
-
-    renderSortable(<SortableTaskCard task={makeTask()} onEdit={onEdit} />);
-
-    await user.click(screen.getByRole('button', { name: 'Edit' }));
-
-    expect(onEdit).toHaveBeenCalledOnce();
-    expect(onEdit).toHaveBeenCalledWith('task-sort-1');
-  });
-
   it('does not block delete button clicks', async () => {
     const user = userEvent.setup();
     const onDelete = vi.fn();

@@ -58,20 +58,6 @@ describe('DraggableTaskCard', () => {
     expect(screen.getByText('In Progress Task')).toBeInTheDocument();
   });
 
-  it('does not block edit button clicks', async () => {
-    const user = userEvent.setup();
-    const onEdit = vi.fn();
-
-    renderWithDndContext(
-      <DraggableTaskCard task={makeTask()} onEdit={onEdit} />,
-    );
-
-    await user.click(screen.getByRole('button', { name: /edit/i }));
-
-    expect(onEdit).toHaveBeenCalledOnce();
-    expect(onEdit).toHaveBeenCalledWith('task-drag-1');
-  });
-
   it('does not block delete button clicks', async () => {
     const user = userEvent.setup();
     const onDelete = vi.fn();

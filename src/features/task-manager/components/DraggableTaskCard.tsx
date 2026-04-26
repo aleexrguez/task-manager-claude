@@ -4,7 +4,6 @@ import { TaskCard } from './TaskCard';
 
 interface DraggableTaskCardProps {
   task: Task;
-  onEdit?: (id: string) => void;
   onDelete?: (id: string) => void;
   onClick?: (id: string) => void;
   onArchive?: (id: string) => void;
@@ -13,7 +12,6 @@ interface DraggableTaskCardProps {
 
 export function DraggableTaskCard({
   task,
-  onEdit,
   onDelete,
   onClick,
   onArchive,
@@ -55,7 +53,6 @@ export function DraggableTaskCard({
       <div className="pl-6">
         <TaskCard
           task={task}
-          onEdit={onEdit}
           onDelete={onDelete}
           onClick={onClick}
           onArchive={onArchive}

@@ -1,5 +1,4 @@
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
 import type { Task } from '../../types';
 import type { TaskBoard } from '../../utils';
@@ -81,29 +80,6 @@ describe('BoardView', () => {
     ).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Done' })).toBeInTheDocument();
     expect(screen.getByText('Only Todo Task')).toBeInTheDocument();
-  });
-
-  it('passes event handlers through to columns', async () => {
-    const user = userEvent.setup();
-    const onEdit = vi.fn();
-    const board: TaskBoard = {
-      todo: [
-        makeTask({
-          id: 'task-xyz',
-          title: 'Handler Test Task',
-          status: 'todo',
-        }),
-      ],
-      'in-progress': [],
-      done: [],
-    };
-
-    render(<BoardView board={board} onEdit={onEdit} />);
-
-    await user.click(screen.getByRole('button', { name: 'Edit' }));
-
-    expect(onEdit).toHaveBeenCalledOnce();
-    expect(onEdit).toHaveBeenCalledWith('task-xyz');
   });
 
   it('uses responsive grid classes that stack on mobile and show 3 columns on md+', () => {
