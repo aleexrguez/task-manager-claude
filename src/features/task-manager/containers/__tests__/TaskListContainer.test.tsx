@@ -29,7 +29,12 @@ vi.mock('../../api', () => ({
   reorderTasks: vi.fn(),
 }));
 
-import { fetchTasks, reorderTasks } from '../../api';
+import {
+  fetchTasks,
+  reorderTasks,
+  archiveTask,
+  unarchiveTask,
+} from '../../api';
 import type { TaskBoard } from '../../utils';
 
 // Capture onBoardChange prop passed to BoardView for direct invocation in tests
@@ -363,5 +368,48 @@ describe('TaskListContainer — Block 1 features', () => {
     });
 
     expect(reorderTasks).not.toHaveBeenCalled();
+  });
+
+  it('calls archiveTask API when clicking Archive on a non-archived done task', async () => {
+    const user = userEvent.setup();
+    (archiveTask as ReturnType<typeof vi.fn>).mockResolvedValue(
+      makeTask({ id: 'task-3', isArchived: true }),
+    );
+
+    const Wrapper = createWrapper();
+    render(<TaskListContainer />, { wrapper: Wrapper });
+
+    await waitFor(() => {
+      expect(screen.getByText('Done task')).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByRole('button', { name: 'Archive' }));
+
+    await waitFor(() => {
+      expect(archiveTask).toHaveBeenCalledWith('task-3');
+    });
+    expect(unarchiveTask).not.toHaveBeenCalled();
+  });
+
+  it('calls unarchiveTask API when clicking Unarchive on an archived task', async () => {
+    const user = userEvent.setup();
+    useTaskUIStore.setState({ showArchived: true });
+    (unarchiveTask as ReturnType<typeof vi.fn>).mockResolvedValue(
+      makeTask({ id: 'task-4', isArchived: false }),
+    );
+
+    const Wrapper = createWrapper();
+    render(<TaskListContainer />, { wrapper: Wrapper });
+
+    await waitFor(() => {
+      expect(screen.getByText('Archived done')).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByRole('button', { name: 'Unarchive' }));
+
+    await waitFor(() => {
+      expect(unarchiveTask).toHaveBeenCalledWith('task-4');
+    });
+    expect(archiveTask).not.toHaveBeenCalled();
   });
 });

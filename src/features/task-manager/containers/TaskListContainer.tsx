@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTasks, useDeleteTask, useReorderTasks } from '../hooks/use-tasks';
-import { useArchiveTask } from '../hooks/use-archive-task';
+import { useArchiveTask, useUnarchiveTask } from '../hooks/use-archive-task';
 import { useTaskUIStore } from '../store/task-ui.store';
 import {
   filterTasksByStatus,
@@ -31,6 +31,7 @@ export function TaskListContainer() {
     variables: deletingId,
   } = useDeleteTask();
   const { mutate: archiveTask } = useArchiveTask();
+  const { mutate: unarchiveTask } = useUnarchiveTask();
   const { mutate: reorderMutation } = useReorderTasks();
 
   const [taskToDelete, setTaskToDelete] = useState<string | null>(null);
@@ -122,7 +123,12 @@ export function TaskListContainer() {
   }
 
   function handleArchive(id: string): void {
-    archiveTask(id);
+    const task = data?.tasks.find((t) => t.id === id);
+    if (task?.isArchived) {
+      unarchiveTask(id);
+    } else {
+      archiveTask(id);
+    }
   }
 
   function handleBoardChange(newBoard: TaskBoard): void {
