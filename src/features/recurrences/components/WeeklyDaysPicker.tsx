@@ -35,7 +35,7 @@ export function WeeklyDaysPicker({
             type="button"
             aria-pressed={isSelected}
             onClick={() => handleToggle(value)}
-            className={`rounded px-2 py-1 text-xs font-medium transition-colors ${
+            className={`cursor-pointer rounded px-2 py-1 text-xs font-medium transition-colors ${
               isSelected
                 ? 'bg-indigo-600 text-white'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'

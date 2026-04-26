@@ -257,7 +257,7 @@ export function RecurrenceForm({
       <button
         type="submit"
         disabled={isSubmitting}
-        className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+        className="cursor-pointer rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {isSubmitting ? `${submitLabel}...` : submitLabel}
       </button>

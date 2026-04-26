@@ -37,7 +37,7 @@ export function RecurrenceCard({
             <button
               type="button"
               onClick={() => onEdit(template.id)}
-              className="rounded-md px-2 py-1 text-xs font-medium text-indigo-600 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-900/40"
+              className="cursor-pointer rounded-md px-2 py-1 text-xs font-medium text-indigo-600 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-900/40"
             >
               Edit
             </button>
@@ -46,7 +46,7 @@ export function RecurrenceCard({
             <button
               type="button"
               onClick={() => onDelete(template.id)}
-              className="rounded-md px-2 py-1 text-xs font-medium text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/40"
+              className="cursor-pointer rounded-md px-2 py-1 text-xs font-medium text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/40"
             >
               Delete
             </button>

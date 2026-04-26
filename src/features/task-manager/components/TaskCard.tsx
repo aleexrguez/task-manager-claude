@@ -36,7 +36,7 @@ export function TaskCard({
                 onDelete(task.id);
               }}
               disabled={isDeleting}
-              className="rounded-md px-2 py-1 text-xs font-medium text-red-600 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50 dark:text-red-400 dark:hover:bg-red-900/40 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
+              className="cursor-pointer rounded-md px-2 py-1 text-xs font-medium text-red-600 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50 dark:text-red-400 dark:hover:bg-red-900/40 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
             >
               {isDeleting ? '...' : 'Delete'}
             </button>
@@ -47,7 +47,7 @@ export function TaskCard({
                 e.stopPropagation();
                 onArchive(task.id);
               }}
-              className="rounded-md px-2 py-1 text-xs font-medium text-gray-600 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:text-gray-400 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
+              className="cursor-pointer rounded-md px-2 py-1 text-xs font-medium text-gray-600 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:text-gray-400 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
             >
               {task.isArchived ? 'Unarchive' : 'Archive'}
             </button>
@@ -95,7 +95,7 @@ export function TaskCard({
         <button
           type="button"
           onClick={() => onClick(task.id)}
-          className="absolute inset-0 z-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
+          className="absolute inset-0 z-0 cursor-pointer rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
           aria-label={task.title}
         />
         <div className="pointer-events-none relative">{cardContent}</div>
