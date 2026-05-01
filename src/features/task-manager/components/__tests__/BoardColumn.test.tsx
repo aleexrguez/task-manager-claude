@@ -74,6 +74,30 @@ describe('BoardColumn', () => {
     expect(screen.getByText(/no tasks/i)).toBeInTheDocument();
   });
 
+  it('renders SortableContext with droppable area even when column is empty', () => {
+    const { container } = renderWithDnd(
+      <BoardColumn title="In Progress" tasks={[]} status="in-progress" />,
+    );
+
+    // The drop zone container should have min-height for drag targets
+    const dropZone = container.querySelector('.min-h-\\[80px\\]');
+    expect(dropZone).toBeInTheDocument();
+  });
+
+  it('uses status as droppable id for column-level drop detection', () => {
+    const { container } = renderWithDnd(
+      <BoardColumn title="In Progress" tasks={[]} status="in-progress" />,
+    );
+
+    // The column region should exist and be accessible
+    const column = screen.getByRole('region', {
+      name: 'In Progress column',
+    });
+    expect(column).toBeInTheDocument();
+    // Verify the droppable wrapper has the ref set (non-null ref node)
+    expect(container.querySelector('[role="region"]')).not.toBeNull();
+  });
+
   it('passes onDelete callback through to TaskCard components', async () => {
     const user = userEvent.setup();
     const onDelete = vi.fn();

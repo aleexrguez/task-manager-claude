@@ -7,8 +7,15 @@ import {
   useSensor,
   useSensors,
   closestCorners,
+  closestCenter,
+  pointerWithin,
 } from '@dnd-kit/core';
-import type { DragOverEvent, DragStartEvent } from '@dnd-kit/core';
+import type {
+  CollisionDetection,
+  DragEndEvent,
+  DragOverEvent,
+  DragStartEvent,
+} from '@dnd-kit/core';
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import type { Task, TaskStatus } from '../types';
 import type { TaskBoard } from '../utils';
@@ -63,6 +70,34 @@ function resolveStatus(
 
   return null;
 }
+
+/**
+ * Custom collision detection for Kanban boards.
+ *
+ * closestCorners uses the dragged element's CORNERS to find the nearest
+ * droppable. When dragging a wide task card toward an empty column, the card's
+ * corners remain closest to items in the source column, so the empty column is
+ * never detected as `over`.
+ *
+ * This strategy uses the POINTER position first (pointerWithin) to determine
+ * which column the cursor is in, then closestCenter among those droppables to
+ * pick the most specific target (task card > column). Falls back to
+ * closestCorners for keyboard dragging or edge cases.
+ */
+const kanbanCollision: CollisionDetection = (args) => {
+  const pointerCollisions = pointerWithin(args);
+
+  if (pointerCollisions.length > 0) {
+    return closestCenter({
+      ...args,
+      droppableContainers: args.droppableContainers.filter((container) =>
+        pointerCollisions.some((c) => c.id === container.id),
+      ),
+    });
+  }
+
+  return closestCorners(args);
+};
 
 export function BoardView({
   board,
@@ -185,9 +220,36 @@ export function BoardView({
     }
   }
 
-  function handleDragEnd(): void {
+  function handleDragEnd(event: DragEndEvent): void {
     isDraggingRef.current = false;
     setActiveTask(null);
+
+    // Safety net: if handleDragOver didn't move the task (e.g. fast drop),
+    // perform the cross-column move now before persisting.
+    if (event.over) {
+      const activeId = String(event.active.id);
+      const overId = String(event.over.id);
+      const sourceStatus = findContainer(localBoard, activeId);
+      const overStatus = resolveStatus(overId, event.over.data.current);
+
+      if (sourceStatus && overStatus && sourceStatus !== overStatus) {
+        const task = localBoard[sourceStatus].find((t) => t.id === activeId);
+        if (task) {
+          const movedTask = { ...task, status: overStatus };
+          const updatedBoard: TaskBoard = {
+            ...localBoard,
+            [sourceStatus]: localBoard[sourceStatus].filter(
+              (t) => t.id !== activeId,
+            ),
+            [overStatus]: [...localBoard[overStatus], movedTask],
+          };
+          setLocalBoard(updatedBoard);
+          onBoardChange?.(updatedBoard);
+          return;
+        }
+      }
+    }
+
     onBoardChange?.(localBoard);
   }
 
@@ -200,7 +262,7 @@ export function BoardView({
   return (
     <DndContext
       sensors={sensors}
-      collisionDetection={closestCorners}
+      collisionDetection={kanbanCollision}
       onDragStart={handleDragStart}
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}

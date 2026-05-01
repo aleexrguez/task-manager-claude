@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTask, useDeleteTask, useUpdateTask } from '../hooks/use-tasks';
 import { useToastStore } from '../store/toast.store';
@@ -26,6 +26,10 @@ export function TaskDetailContainer() {
 
   const [showConfirm, setShowConfirm] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [id]);
 
   const recurring = task ? isGeneratedTask(task) : false;
   const { data: recurrenceTemplate } = useRecurrence(

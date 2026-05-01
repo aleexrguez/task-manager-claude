@@ -42,6 +42,7 @@ export function CreateRecurrenceContainer() {
           onSubmit={handleSubmit}
           isSubmitting={isPending}
           submitLabel="Submit"
+          autoFocusTitle
         />
       </div>
     </div>

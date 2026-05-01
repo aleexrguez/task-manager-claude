@@ -43,16 +43,18 @@ export function BoardColumn({
           {tasks.length}
         </span>
       </div>
-      {tasks.length === 0 ? (
-        <p className="text-xs text-gray-400 dark:text-gray-500">No tasks</p>
-      ) : (
-        <SortableContext
-          id={status}
-          items={taskIds}
-          strategy={verticalListSortingStrategy}
-        >
-          <div className="flex flex-col gap-2">
-            {tasks.map((task) => (
+      <SortableContext
+        id={status}
+        items={taskIds}
+        strategy={verticalListSortingStrategy}
+      >
+        <div className="flex min-h-[80px] flex-col gap-2">
+          {tasks.length === 0 ? (
+            <p className="py-6 text-center text-xs text-gray-400 dark:text-gray-500">
+              No tasks
+            </p>
+          ) : (
+            tasks.map((task) => (
               <SortableTaskCard
                 key={task.id}
                 task={task}
@@ -61,10 +63,10 @@ export function BoardColumn({
                 onArchive={onArchive}
                 isDeleting={deletingId === task.id}
               />
-            ))}
-          </div>
-        </SortableContext>
-      )}
+            ))
+          )}
+        </div>
+      </SortableContext>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
 import type { CreateTaskInput, TaskStatus, TaskPriority } from '../types';
 
@@ -7,6 +7,7 @@ interface TaskFormProps {
   initialValues?: Partial<CreateTaskInput>;
   isSubmitting?: boolean;
   submitLabel?: string;
+  autoFocusTitle?: boolean;
 }
 
 interface FormState {
@@ -32,10 +33,18 @@ export function TaskForm({
   initialValues,
   isSubmitting = false,
   submitLabel = 'Submit',
+  autoFocusTitle = false,
 }: TaskFormProps) {
+  const titleRef = useRef<HTMLInputElement>(null);
   const [fields, setFields] = useState<FormState>(() =>
     buildInitialState(initialValues),
   );
+
+  useEffect(() => {
+    if (autoFocusTitle) {
+      titleRef.current?.focus();
+    }
+  }, [autoFocusTitle]);
 
   function handleChange(
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
@@ -68,6 +77,7 @@ export function TaskForm({
           Title <span className="text-red-500">*</span>
         </label>
         <input
+          ref={titleRef}
           id="title"
           name="title"
           type="text"
