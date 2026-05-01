@@ -66,3 +66,13 @@ describe('LoginForm — password visibility toggle', () => {
     expect(getPasswordInput()).toHaveAttribute('type', 'text');
   });
 });
+
+describe('LoginForm — forgot password link', () => {
+  it('renders a "Forgot password?" link pointing to /forgot-password', () => {
+    renderLoginForm();
+
+    const link = screen.getByText(/forgot password/i);
+    expect(link).toBeInTheDocument();
+    expect(link.closest('a')).toHaveAttribute('href', '/forgot-password');
+  });
+});

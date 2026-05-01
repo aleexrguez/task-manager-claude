@@ -1,1 +1,8 @@
-export { useAuth, useSignIn, useSignUp, useSignOut } from './use-auth';
+export {
+  useAuth,
+  useSignIn,
+  useSignUp,
+  useSignOut,
+  useResetPassword,
+  useUpdatePassword,
+} from './use-auth';

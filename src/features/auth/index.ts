@@ -1,3 +1,13 @@
-export { LoginContainer, RegisterContainer } from './containers';
+export {
+  LoginContainer,
+  RegisterContainer,
+  ForgotPasswordContainer,
+  ResetPasswordContainer,
+} from './containers';
 export { useAuth } from './hooks';
-export type { LoginInput, RegisterInput } from './types';
+export type {
+  LoginInput,
+  RegisterInput,
+  ForgotPasswordInput,
+  ResetPasswordInput,
+} from './types';
