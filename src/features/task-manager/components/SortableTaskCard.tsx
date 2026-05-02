@@ -8,6 +8,7 @@ interface SortableTaskCardProps {
   onDelete?: (id: string) => void;
   onClick?: (id: string) => void;
   onArchive?: (id: string) => void;
+  onDuplicate?: (id: string) => void;
   isDeleting?: boolean;
 }
 
@@ -16,6 +17,7 @@ export function SortableTaskCard({
   onDelete,
   onClick,
   onArchive,
+  onDuplicate,
   isDeleting,
 }: SortableTaskCardProps) {
   const {
@@ -43,6 +45,7 @@ export function SortableTaskCard({
         onDelete={onDelete}
         onClick={onClick}
         onArchive={onArchive}
+        onDuplicate={onDuplicate}
         isDeleting={isDeleting}
       />
     </div>

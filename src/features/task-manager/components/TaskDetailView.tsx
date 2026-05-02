@@ -8,7 +8,6 @@ interface TaskDetailViewProps {
   task: Task;
   onEdit: () => void;
   onDelete: () => void;
-  onBack: () => void;
   isEditing?: boolean;
   onSave?: (data: CreateTaskInput) => void;
   onCancel?: () => void;
@@ -21,7 +20,6 @@ export function TaskDetailView({
   task,
   onEdit,
   onDelete,
-  onBack,
   isEditing = false,
   onSave,
   onCancel,
@@ -41,32 +39,7 @@ export function TaskDetailView({
   };
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6 rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-      <div className="flex items-center justify-between">
-        <button
-          onClick={onBack}
-          className="cursor-pointer rounded-md px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
-        >
-          Back
-        </button>
-        {!isEditing && (
-          <div className="flex gap-2">
-            <button
-              onClick={onEdit}
-              className="cursor-pointer rounded-md px-3 py-1.5 text-sm font-medium text-indigo-600 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-900/40 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
-            >
-              Edit
-            </button>
-            <button
-              onClick={onDelete}
-              className="cursor-pointer rounded-md px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/40 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
-            >
-              Delete
-            </button>
-          </div>
-        )}
-      </div>
-
+    <div className="mx-auto max-w-2xl space-y-4 rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
       {isEditing ? (
         <div className="space-y-4">
           <TaskForm
@@ -85,9 +58,25 @@ export function TaskDetailView({
         </div>
       ) : (
         <div className="space-y-4">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-            {task.title}
-          </h1>
+          <div className="flex items-start justify-between gap-4">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+              {task.title}
+            </h1>
+            <div className="flex shrink-0 gap-2">
+              <button
+                onClick={onEdit}
+                className="cursor-pointer rounded-md px-3 py-1.5 text-sm font-medium text-indigo-600 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-900/40 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
+              >
+                Edit
+              </button>
+              <button
+                onClick={onDelete}
+                className="cursor-pointer rounded-md px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/40 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
 
           <p className="text-sm text-gray-600 dark:text-gray-400">
             {task.description ?? 'No description'}

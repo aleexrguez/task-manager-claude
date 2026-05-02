@@ -247,3 +247,59 @@ describe('TaskCard — recurring task behavior', () => {
     expect(onArchive).toHaveBeenCalledWith('task-recurring-001');
   });
 });
+
+describe('TaskCard — duplicate button', () => {
+  const baseTask: Task = {
+    id: 'task-dup-001',
+    title: 'Duplicable Task',
+    status: 'todo',
+    priority: 'high',
+    isArchived: false,
+    position: 0,
+    createdAt: '2026-04-20T10:00:00.000Z',
+    updatedAt: '2026-04-20T10:00:00.000Z',
+  };
+
+  it('renders Duplicate button when onDuplicate is provided', () => {
+    render(<TaskCard task={baseTask} onDuplicate={vi.fn()} />);
+
+    expect(
+      screen.getByRole('button', { name: /duplicate/i }),
+    ).toBeInTheDocument();
+  });
+
+  it('does not render Duplicate button when onDuplicate is not provided', () => {
+    render(<TaskCard task={baseTask} />);
+
+    expect(
+      screen.queryByRole('button', { name: /duplicate/i }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('calls onDuplicate with task id when clicked', async () => {
+    const user = userEvent.setup();
+    const onDuplicate = vi.fn();
+
+    render(<TaskCard task={baseTask} onDuplicate={onDuplicate} />);
+
+    await user.click(screen.getByRole('button', { name: /duplicate/i }));
+
+    expect(onDuplicate).toHaveBeenCalledOnce();
+    expect(onDuplicate).toHaveBeenCalledWith('task-dup-001');
+  });
+
+  it('does not trigger onClick when Duplicate is clicked', async () => {
+    const user = userEvent.setup();
+    const onClick = vi.fn();
+    const onDuplicate = vi.fn();
+
+    render(
+      <TaskCard task={baseTask} onClick={onClick} onDuplicate={onDuplicate} />,
+    );
+
+    await user.click(screen.getByRole('button', { name: /duplicate/i }));
+
+    expect(onDuplicate).toHaveBeenCalledOnce();
+    expect(onClick).not.toHaveBeenCalled();
+  });
+});

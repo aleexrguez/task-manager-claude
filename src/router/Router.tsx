@@ -3,7 +3,12 @@ import {
   TaskDashboardContainer,
   TaskDetailContainer,
 } from '@/features/task-manager/containers';
-import { LoginContainer, RegisterContainer } from '@/features/auth';
+import {
+  LoginContainer,
+  RegisterContainer,
+  ForgotPasswordContainer,
+  ResetPasswordContainer,
+} from '@/features/auth';
 import { LandingPage } from '@/features/landing';
 import { AppShellContainer } from '@/shared/components/app-shell';
 import { RecurrenceDashboardContainer } from '@/features/recurrences';
@@ -40,6 +45,15 @@ export function Router() {
             </PublicOnlyRoute>
           }
         />
+        <Route
+          path="/forgot-password"
+          element={
+            <PublicOnlyRoute>
+              <ForgotPasswordContainer />
+            </PublicOnlyRoute>
+          }
+        />
+        <Route path="/reset-password" element={<ResetPasswordContainer />} />
 
         {/* Protected routes with App Shell */}
         <Route

@@ -112,6 +112,49 @@ describe('useArchiveTask', () => {
       expect.objectContaining({ queryKey: taskKeys.detail('task-1') }),
     );
   });
+
+  it('optimistically sets isArchived to true in the cache', async () => {
+    const { queryClient, Wrapper } = createWrapper();
+    const task = makeTask({ id: 'task-1' });
+    queryClient.setQueryData(taskKeys.lists(), {
+      tasks: [task],
+      total: 1,
+    });
+
+    const { result } = renderHook(() => useArchiveTask(), { wrapper: Wrapper });
+
+    result.current.mutate('task-1');
+
+    await waitFor(() => {
+      const cached = queryClient.getQueryData<{
+        tasks: Array<{ id: string; isArchived: boolean }>;
+      }>(taskKeys.lists());
+      expect(cached?.tasks[0].isArchived).toBe(true);
+    });
+  });
+
+  it('rolls back cache on error', async () => {
+    (archiveTask as ReturnType<typeof vi.fn>).mockRejectedValueOnce(
+      new Error('Network error'),
+    );
+    const { queryClient, Wrapper } = createWrapper();
+    const task = makeTask({ id: 'task-1' });
+    queryClient.setQueryData(taskKeys.lists(), {
+      tasks: [task],
+      total: 1,
+    });
+
+    const { result } = renderHook(() => useArchiveTask(), { wrapper: Wrapper });
+
+    result.current.mutate('task-1');
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+
+    const cached = queryClient.getQueryData<{
+      tasks: Array<{ id: string; isArchived: boolean }>;
+    }>(taskKeys.lists());
+    expect(cached?.tasks[0].isArchived).toBe(false);
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -172,5 +215,52 @@ describe('useUnarchiveTask', () => {
     expect(invalidateSpy).toHaveBeenCalledWith(
       expect.objectContaining({ queryKey: taskKeys.detail('task-2') }),
     );
+  });
+
+  it('optimistically sets isArchived to false in the cache', async () => {
+    const { queryClient, Wrapper } = createWrapper();
+    const task = { ...makeTask({ id: 'task-2' }), isArchived: true };
+    queryClient.setQueryData(taskKeys.lists(), {
+      tasks: [task],
+      total: 1,
+    });
+
+    const { result } = renderHook(() => useUnarchiveTask(), {
+      wrapper: Wrapper,
+    });
+
+    result.current.mutate('task-2');
+
+    await waitFor(() => {
+      const cached = queryClient.getQueryData<{
+        tasks: Array<{ id: string; isArchived: boolean }>;
+      }>(taskKeys.lists());
+      expect(cached?.tasks[0].isArchived).toBe(false);
+    });
+  });
+
+  it('rolls back cache on error', async () => {
+    (unarchiveTask as ReturnType<typeof vi.fn>).mockRejectedValueOnce(
+      new Error('Network error'),
+    );
+    const { queryClient, Wrapper } = createWrapper();
+    const task = { ...makeTask({ id: 'task-2' }), isArchived: true };
+    queryClient.setQueryData(taskKeys.lists(), {
+      tasks: [task],
+      total: 1,
+    });
+
+    const { result } = renderHook(() => useUnarchiveTask(), {
+      wrapper: Wrapper,
+    });
+
+    result.current.mutate('task-2');
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+
+    const cached = queryClient.getQueryData<{
+      tasks: Array<{ id: string; isArchived: boolean }>;
+    }>(taskKeys.lists());
+    expect(cached?.tasks[0].isArchived).toBe(true);
   });
 });

@@ -9,6 +9,7 @@ interface TaskCardProps {
   onDelete?: (id: string) => void;
   onClick?: (id: string) => void;
   onArchive?: (id: string) => void;
+  onDuplicate?: (id: string) => void;
   isDeleting?: boolean;
 }
 
@@ -17,6 +18,7 @@ export function TaskCard({
   onDelete,
   onClick,
   onArchive,
+  onDuplicate,
   isDeleting = false,
 }: TaskCardProps) {
   const formattedDate = new Date(task.createdAt).toLocaleDateString();
@@ -29,6 +31,17 @@ export function TaskCard({
           {task.title}
         </h3>
         <div className="pointer-events-auto flex shrink-0 gap-1 opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100">
+          {onDuplicate && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onDuplicate(task.id);
+              }}
+              className="cursor-pointer rounded-md px-2 py-1 text-xs font-medium text-indigo-600 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-900/40 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
+            >
+              Duplicate
+            </button>
+          )}
           {!recurring && onDelete && (
             <button
               onClick={(e) => {

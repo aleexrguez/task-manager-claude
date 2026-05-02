@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import type { CreateRecurrenceInput } from '../types/recurrence.types';
 import type { RecurrenceFrequency } from '../types/recurrence.types';
@@ -10,6 +10,7 @@ interface RecurrenceFormProps {
   initialValues?: Partial<CreateRecurrenceInput>;
   isSubmitting?: boolean;
   submitLabel?: string;
+  autoFocusTitle?: boolean;
 }
 
 interface FormState {
@@ -55,11 +56,19 @@ export function RecurrenceForm({
   initialValues,
   isSubmitting = false,
   submitLabel = 'Submit',
+  autoFocusTitle = false,
 }: RecurrenceFormProps) {
+  const titleRef = useRef<HTMLInputElement>(null);
   const [fields, setFields] = useState<FormState>(() =>
     buildInitialState(initialValues),
   );
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    if (autoFocusTitle) {
+      titleRef.current?.focus();
+    }
+  }, [autoFocusTitle]);
 
   function handleChange(
     e: React.ChangeEvent<
@@ -142,6 +151,7 @@ export function RecurrenceForm({
           Title <span className="text-red-500">*</span>
         </label>
         <input
+          ref={titleRef}
           id="title"
           name="title"
           type="text"

@@ -120,4 +120,43 @@ describe('TaskDashboardContainer', () => {
 
     expect(useTaskUIStore.getState().viewMode).toBe('board');
   });
+
+  it('excludes archived done tasks from stats when showArchived is off', async () => {
+    const tasks = [
+      makeTask({ id: 't1', status: 'todo' }),
+      makeTask({ id: 't2', status: 'done', isArchived: true }),
+      makeTask({ id: 't3', status: 'done', isArchived: false }),
+    ];
+    (fetchTasks as ReturnType<typeof vi.fn>).mockResolvedValue({
+      tasks,
+      total: tasks.length,
+    });
+    useTaskUIStore.setState({ showArchived: false });
+
+    const Wrapper = createWrapper();
+    render(<TaskDashboardContainer />, { wrapper: Wrapper });
+
+    // Wait for data to load — subtitle reflects visible tasks
+    const subtitle = await screen.findByText('2 tasks shown');
+    expect(subtitle).toBeInTheDocument();
+  });
+
+  it('includes archived done tasks in stats when showArchived is on', async () => {
+    const tasks = [
+      makeTask({ id: 't1', status: 'todo' }),
+      makeTask({ id: 't2', status: 'done', isArchived: true }),
+      makeTask({ id: 't3', status: 'done', isArchived: false }),
+    ];
+    (fetchTasks as ReturnType<typeof vi.fn>).mockResolvedValue({
+      tasks,
+      total: tasks.length,
+    });
+    useTaskUIStore.setState({ showArchived: true });
+
+    const Wrapper = createWrapper();
+    render(<TaskDashboardContainer />, { wrapper: Wrapper });
+
+    const subtitle = await screen.findByText('3 tasks shown');
+    expect(subtitle).toBeInTheDocument();
+  });
 });

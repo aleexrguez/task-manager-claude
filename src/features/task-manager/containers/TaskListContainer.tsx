@@ -1,7 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { useTasks, useDeleteTask, useReorderTasks } from '../hooks/use-tasks';
+import {
+  useTasks,
+  useDeleteTask,
+  useCreateTask,
+  useReorderTasks,
+} from '../hooks/use-tasks';
 import { useArchiveTask, useUnarchiveTask } from '../hooks/use-archive-task';
 import { useTaskUIStore } from '../store/task-ui.store';
 import {
@@ -10,6 +15,7 @@ import {
   sortTasks,
   groupTasksByPosition,
   extractReorderUpdates,
+  buildDuplicateInput,
 } from '../utils/task.utils';
 import type { TaskListResponse } from '../api';
 import type { TaskBoard } from '../utils/task.utils';
@@ -33,6 +39,7 @@ export function TaskListContainer() {
   const { mutate: archiveTask } = useArchiveTask();
   const { mutate: unarchiveTask } = useUnarchiveTask();
   const { mutate: reorderMutation } = useReorderTasks();
+  const { mutate: createTask } = useCreateTask();
 
   const [taskToDelete, setTaskToDelete] = useState<string | null>(null);
 
@@ -130,6 +137,12 @@ export function TaskListContainer() {
     }
   }
 
+  function handleDuplicate(id: string): void {
+    const task = data?.tasks.find((t) => t.id === id);
+    if (!task) return;
+    createTask(buildDuplicateInput(task));
+  }
+
   function handleBoardChange(newBoard: TaskBoard): void {
     const currentData = queryClient.getQueryData<TaskListResponse>(
       taskKeys.lists(),
@@ -222,6 +235,7 @@ export function TaskListContainer() {
             onDelete={handleDelete}
             onClick={(id) => navigate(`/app/tasks/${id}`)}
             onArchive={handleArchive}
+            onDuplicate={handleDuplicate}
             deletingId={isDeleting ? (deletingId ?? null) : null}
             onBoardChange={handleBoardChange}
           />
@@ -234,6 +248,7 @@ export function TaskListContainer() {
             onClick={(id) => navigate(`/app/tasks/${id}`)}
             onCreateNew={openCreateModal}
             onArchive={handleArchive}
+            onDuplicate={handleDuplicate}
           />
         )}
       </div>

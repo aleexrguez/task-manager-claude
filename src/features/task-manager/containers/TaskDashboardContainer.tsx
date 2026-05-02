@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useTasks } from '../hooks/use-tasks';
 import { useAutoPurge } from '../hooks/use-auto-purge';
 import { useTaskUIStore } from '../store/task-ui.store';
-import { getTaskStats } from '../utils/task.utils';
+import { getTaskStats, filterVisibleTasks } from '../utils/task.utils';
 import { TaskStats, ViewToggle } from '../components';
 import { TaskListContainer } from './TaskListContainer';
 import { CreateTaskContainer } from './CreateTaskContainer';
@@ -13,9 +13,14 @@ export function TaskDashboardContainer() {
   const openCreateModal = useTaskUIStore((s) => s.openCreateModal);
   const viewMode = useTaskUIStore((s) => s.viewMode);
   const setViewMode = useTaskUIStore((s) => s.setViewMode);
+  const showArchived = useTaskUIStore((s) => s.showArchived);
 
-  const stats = useMemo(() => getTaskStats(data?.tasks ?? []), [data]);
-  const totalTasks = data?.tasks?.length ?? 0;
+  const visibleTasks = useMemo(
+    () => filterVisibleTasks(data?.tasks ?? [], showArchived),
+    [data, showArchived],
+  );
+  const stats = useMemo(() => getTaskStats(visibleTasks), [visibleTasks]);
+  const totalTasks = visibleTasks.length;
 
   useAutoPurge(data?.tasks ?? []);
 
@@ -29,7 +34,7 @@ export function TaskDashboardContainer() {
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
             {totalTasks === 0
               ? 'No tasks yet'
-              : `${totalTasks} task${totalTasks === 1 ? '' : 's'} total`}
+              : `${totalTasks} task${totalTasks === 1 ? '' : 's'} shown`}
           </p>
         </div>
         <div className="flex items-center gap-3">

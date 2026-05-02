@@ -46,7 +46,7 @@ describe('useDueReminders', () => {
   });
 
   it('returns empty array when no tasks qualify', () => {
-    const task = makeTask({ dueDate: '2026-05-01' }); // far future
+    const task = makeTask({ dueDate: '2027-05-01' }); // far future
     const { result } = renderHook(() => useDueReminders([task]));
     expect(result.current).toEqual([]);
   });

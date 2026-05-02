@@ -53,7 +53,7 @@ export function SettingsPage({
           htmlFor="retention-policy"
           className="flex flex-col gap-2 text-sm text-gray-700 dark:text-gray-300"
         >
-          Automatically delete completed tasks after:
+          Automatically archive completed tasks after:
           <RetentionPolicySelect
             id="retention-policy"
             retentionPolicy={retentionPolicy}

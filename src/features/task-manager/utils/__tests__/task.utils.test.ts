@@ -8,6 +8,7 @@ import {
   isDueDateOverdue,
   getDueDateDaysRemaining,
   extractReorderUpdates,
+  buildDuplicateInput,
 } from '../../utils';
 import type { TaskBoard } from '../../utils';
 
@@ -700,5 +701,81 @@ describe('extractReorderUpdates', () => {
     });
     expect(stayedUpdate).toEqual({ id: 'stayed', position: 0 });
     expect(stayedUpdate).not.toHaveProperty('status');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 9. buildDuplicateInput
+// ---------------------------------------------------------------------------
+
+describe('buildDuplicateInput', () => {
+  it('appends "(copy)" to the title', () => {
+    const task = makeTask({ title: 'My Task' });
+    const result = buildDuplicateInput(task);
+
+    expect(result.title).toBe('My Task (copy)');
+  });
+
+  it('copies description, priority, and dueDate', () => {
+    const task = makeTask({
+      description: 'A description',
+      priority: 'high',
+      dueDate: '2026-06-15',
+    });
+    const result = buildDuplicateInput(task);
+
+    expect(result.description).toBe('A description');
+    expect(result.priority).toBe('high');
+    expect(result.dueDate).toBe('2026-06-15');
+  });
+
+  it('preserves status for todo and in-progress tasks', () => {
+    expect(buildDuplicateInput(makeTask({ status: 'todo' })).status).toBe(
+      'todo',
+    );
+    expect(
+      buildDuplicateInput(makeTask({ status: 'in-progress' })).status,
+    ).toBe('in-progress');
+  });
+
+  it('resets status to todo when original is done', () => {
+    const task = makeTask({ status: 'done' });
+    const result = buildDuplicateInput(task);
+
+    expect(result.status).toBe('todo');
+  });
+
+  it('does not include id, createdAt, updatedAt, completedAt, isArchived', () => {
+    const task = makeTask({
+      status: 'done',
+      completedAt: '2026-04-10T14:30:00.000Z',
+      isArchived: true,
+    });
+    const result = buildDuplicateInput(task);
+
+    expect(result).not.toHaveProperty('id');
+    expect(result).not.toHaveProperty('createdAt');
+    expect(result).not.toHaveProperty('updatedAt');
+    expect(result).not.toHaveProperty('completedAt');
+    expect(result).not.toHaveProperty('isArchived');
+  });
+
+  it('does not include recurrence metadata', () => {
+    const task = makeTask({
+      recurrenceTemplateId: 'template-uuid',
+      recurrenceDateKey: '2026-05-01',
+    });
+    const result = buildDuplicateInput(task);
+
+    expect(result).not.toHaveProperty('recurrenceTemplateId');
+    expect(result).not.toHaveProperty('recurrenceDateKey');
+  });
+
+  it('handles task with no description or dueDate', () => {
+    const task = makeTask({ description: undefined, dueDate: undefined });
+    const result = buildDuplicateInput(task);
+
+    expect(result.description).toBeUndefined();
+    expect(result.dueDate).toBeUndefined();
   });
 });

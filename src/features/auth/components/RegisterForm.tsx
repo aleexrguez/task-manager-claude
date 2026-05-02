@@ -33,6 +33,8 @@ export function RegisterForm({
     confirmPassword: '',
   });
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const inputClass =
     'rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-400';
@@ -96,17 +98,31 @@ export function RegisterForm({
         <label htmlFor="password" className={labelClass}>
           Password <span className="text-red-500">*</span>
         </label>
-        <input
-          id="password"
-          name="password"
-          type="password"
-          required
-          minLength={6}
-          value={fields.password}
-          onChange={handleChange}
-          className={inputClass}
-          placeholder="••••••"
-        />
+        <div className="relative">
+          <input
+            id="password"
+            name="password"
+            type={showPassword ? 'text' : 'password'}
+            required
+            minLength={6}
+            value={fields.password}
+            onChange={handleChange}
+            className={`${inputClass} w-full pr-10`}
+            placeholder="••••••"
+          />
+          <button
+            type="button"
+            aria-label={showPassword ? 'Hide password' : 'Show password'}
+            onClick={() => setShowPassword((prev) => !prev)}
+            className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+          >
+            <img
+              src={showPassword ? '/HidePassword.png' : '/ShowPassword.png'}
+              alt=""
+              className="h-5 w-5"
+            />
+          </button>
+        </div>
         {fieldErrors.password && (
           <p className="text-xs text-red-600 dark:text-red-400">
             {fieldErrors.password}
@@ -118,17 +134,33 @@ export function RegisterForm({
         <label htmlFor="confirmPassword" className={labelClass}>
           Confirm Password <span className="text-red-500">*</span>
         </label>
-        <input
-          id="confirmPassword"
-          name="confirmPassword"
-          type="password"
-          required
-          minLength={6}
-          value={fields.confirmPassword}
-          onChange={handleChange}
-          className={inputClass}
-          placeholder="••••••"
-        />
+        <div className="relative">
+          <input
+            id="confirmPassword"
+            name="confirmPassword"
+            type={showConfirmPassword ? 'text' : 'password'}
+            required
+            minLength={6}
+            value={fields.confirmPassword}
+            onChange={handleChange}
+            className={`${inputClass} w-full pr-10`}
+            placeholder="••••••"
+          />
+          <button
+            type="button"
+            aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+            onClick={() => setShowConfirmPassword((prev) => !prev)}
+            className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+          >
+            <img
+              src={
+                showConfirmPassword ? '/HidePassword.png' : '/ShowPassword.png'
+              }
+              alt=""
+              className="h-5 w-5"
+            />
+          </button>
+        </div>
         {fieldErrors.confirmPassword && (
           <p className="text-xs text-red-600 dark:text-red-400">
             {fieldErrors.confirmPassword}

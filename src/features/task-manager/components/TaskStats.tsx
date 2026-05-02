@@ -33,7 +33,7 @@ export function TaskStats({ stats }: TaskStatsProps) {
       label: 'In Progress',
       value: stats.inProgress,
       className:
-        'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800',
+        'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-800',
     },
     {
       label: 'Done',

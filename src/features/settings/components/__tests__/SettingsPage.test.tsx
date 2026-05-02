@@ -46,7 +46,7 @@ describe('SettingsPage', () => {
       screen.getByRole('heading', { level: 2, name: /data retention/i }),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/automatically delete completed tasks after/i),
+      screen.getByText(/automatically archive completed tasks after/i),
     ).toBeInTheDocument();
     expect(screen.getByRole('combobox')).toBeInTheDocument();
   });

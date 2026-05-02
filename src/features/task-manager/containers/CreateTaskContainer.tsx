@@ -53,6 +53,7 @@ export function CreateTaskContainer() {
           onSubmit={handleSubmit}
           isSubmitting={isPending}
           submitLabel="Create Task"
+          autoFocusTitle
         />
       </div>
     </div>

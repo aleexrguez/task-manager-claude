@@ -19,12 +19,7 @@ const mockTask: Task = {
 describe('TaskDetailView', () => {
   it('renders the task title as a heading', () => {
     render(
-      <TaskDetailView
-        task={mockTask}
-        onEdit={vi.fn()}
-        onDelete={vi.fn()}
-        onBack={vi.fn()}
-      />,
+      <TaskDetailView task={mockTask} onEdit={vi.fn()} onDelete={vi.fn()} />,
     );
 
     expect(
@@ -34,12 +29,7 @@ describe('TaskDetailView', () => {
 
   it('renders the task description', () => {
     render(
-      <TaskDetailView
-        task={mockTask}
-        onEdit={vi.fn()}
-        onDelete={vi.fn()}
-        onBack={vi.fn()}
-      />,
+      <TaskDetailView task={mockTask} onEdit={vi.fn()} onDelete={vi.fn()} />,
     );
 
     expect(screen.getByText('This is a test description')).toBeInTheDocument();
@@ -56,7 +46,6 @@ describe('TaskDetailView', () => {
         task={taskWithoutDescription}
         onEdit={vi.fn()}
         onDelete={vi.fn()}
-        onBack={vi.fn()}
       />,
     );
 
@@ -65,12 +54,7 @@ describe('TaskDetailView', () => {
 
   it('renders the StatusBadge with correct status', () => {
     render(
-      <TaskDetailView
-        task={mockTask}
-        onEdit={vi.fn()}
-        onDelete={vi.fn()}
-        onBack={vi.fn()}
-      />,
+      <TaskDetailView task={mockTask} onEdit={vi.fn()} onDelete={vi.fn()} />,
     );
 
     expect(screen.getByText('In Progress')).toBeInTheDocument();
@@ -78,12 +62,7 @@ describe('TaskDetailView', () => {
 
   it('renders the PriorityIndicator with correct priority', () => {
     render(
-      <TaskDetailView
-        task={mockTask}
-        onEdit={vi.fn()}
-        onDelete={vi.fn()}
-        onBack={vi.fn()}
-      />,
+      <TaskDetailView task={mockTask} onEdit={vi.fn()} onDelete={vi.fn()} />,
     );
 
     expect(screen.getByText('High')).toBeInTheDocument();
@@ -91,12 +70,7 @@ describe('TaskDetailView', () => {
 
   it('renders formatted created date', () => {
     render(
-      <TaskDetailView
-        task={mockTask}
-        onEdit={vi.fn()}
-        onDelete={vi.fn()}
-        onBack={vi.fn()}
-      />,
+      <TaskDetailView task={mockTask} onEdit={vi.fn()} onDelete={vi.fn()} />,
     );
 
     const formattedDate = new Date(
@@ -109,12 +83,7 @@ describe('TaskDetailView', () => {
 
   it('renders formatted updated date', () => {
     render(
-      <TaskDetailView
-        task={mockTask}
-        onEdit={vi.fn()}
-        onDelete={vi.fn()}
-        onBack={vi.fn()}
-      />,
+      <TaskDetailView task={mockTask} onEdit={vi.fn()} onDelete={vi.fn()} />,
     );
 
     const formattedDate = new Date(
@@ -130,12 +99,7 @@ describe('TaskDetailView', () => {
     const user = userEvent.setup();
 
     render(
-      <TaskDetailView
-        task={mockTask}
-        onEdit={onEdit}
-        onDelete={vi.fn()}
-        onBack={vi.fn()}
-      />,
+      <TaskDetailView task={mockTask} onEdit={onEdit} onDelete={vi.fn()} />,
     );
 
     await user.click(screen.getByRole('button', { name: /edit/i }));
@@ -148,35 +112,12 @@ describe('TaskDetailView', () => {
     const user = userEvent.setup();
 
     render(
-      <TaskDetailView
-        task={mockTask}
-        onEdit={vi.fn()}
-        onDelete={onDelete}
-        onBack={vi.fn()}
-      />,
+      <TaskDetailView task={mockTask} onEdit={vi.fn()} onDelete={onDelete} />,
     );
 
     await user.click(screen.getByRole('button', { name: /delete/i }));
 
     expect(onDelete).toHaveBeenCalledOnce();
-  });
-
-  it('calls onBack when Back button is clicked', async () => {
-    const onBack = vi.fn();
-    const user = userEvent.setup();
-
-    render(
-      <TaskDetailView
-        task={mockTask}
-        onEdit={vi.fn()}
-        onDelete={vi.fn()}
-        onBack={onBack}
-      />,
-    );
-
-    await user.click(screen.getByRole('button', { name: /back/i }));
-
-    expect(onBack).toHaveBeenCalledOnce();
   });
 });
 
@@ -195,26 +136,14 @@ describe('TaskDetailView — Block 1 fields', () => {
   it('renders due date section in metadata when task has a dueDate', () => {
     const task: Task = { ...baseTask, dueDate: '2026-05-15' };
 
-    render(
-      <TaskDetailView
-        task={task}
-        onEdit={vi.fn()}
-        onDelete={vi.fn()}
-        onBack={vi.fn()}
-      />,
-    );
+    render(<TaskDetailView task={task} onEdit={vi.fn()} onDelete={vi.fn()} />);
 
     expect(screen.getByText('Due Date')).toBeInTheDocument();
   });
 
   it('does not render due date label when task has no dueDate', () => {
     render(
-      <TaskDetailView
-        task={baseTask}
-        onEdit={vi.fn()}
-        onDelete={vi.fn()}
-        onBack={vi.fn()}
-      />,
+      <TaskDetailView task={baseTask} onEdit={vi.fn()} onDelete={vi.fn()} />,
     );
 
     expect(screen.queryByText(/due date/i)).not.toBeInTheDocument();
@@ -228,14 +157,7 @@ describe('TaskDetailView — Block 1 fields', () => {
       isArchived: false,
     };
 
-    render(
-      <TaskDetailView
-        task={task}
-        onEdit={vi.fn()}
-        onDelete={vi.fn()}
-        onBack={vi.fn()}
-      />,
-    );
+    render(<TaskDetailView task={task} onEdit={vi.fn()} onDelete={vi.fn()} />);
 
     expect(screen.getByText(/Completed/)).toBeInTheDocument();
   });
@@ -243,14 +165,7 @@ describe('TaskDetailView — Block 1 fields', () => {
   it('does not render completedAt when task is not done', () => {
     const task: Task = { ...baseTask, status: 'todo' };
 
-    render(
-      <TaskDetailView
-        task={task}
-        onEdit={vi.fn()}
-        onDelete={vi.fn()}
-        onBack={vi.fn()}
-      />,
-    );
+    render(<TaskDetailView task={task} onEdit={vi.fn()} onDelete={vi.fn()} />);
 
     expect(screen.queryByText(/Completed/)).not.toBeInTheDocument();
   });
@@ -275,7 +190,6 @@ describe('TaskDetailView — inline editing', () => {
         task={editingTask}
         onEdit={vi.fn()}
         onDelete={vi.fn()}
-        onBack={vi.fn()}
         isEditing={true}
         onSave={vi.fn()}
         onCancel={vi.fn()}
@@ -294,7 +208,6 @@ describe('TaskDetailView — inline editing', () => {
         task={editingTask}
         onEdit={vi.fn()}
         onDelete={vi.fn()}
-        onBack={vi.fn()}
         isEditing={true}
         onSave={vi.fn()}
         onCancel={vi.fn()}
@@ -314,7 +227,6 @@ describe('TaskDetailView — inline editing', () => {
         task={editingTask}
         onEdit={vi.fn()}
         onDelete={vi.fn()}
-        onBack={vi.fn()}
         isEditing={true}
         onSave={vi.fn()}
         onCancel={onCancel}
@@ -335,7 +247,6 @@ describe('TaskDetailView — inline editing', () => {
         task={editingTask}
         onEdit={vi.fn()}
         onDelete={vi.fn()}
-        onBack={vi.fn()}
         isEditing={true}
         onSave={onSave}
         onCancel={vi.fn()}
@@ -349,12 +260,7 @@ describe('TaskDetailView — inline editing', () => {
 
   it('shows view mode by default when isEditing is not provided', () => {
     render(
-      <TaskDetailView
-        task={editingTask}
-        onEdit={vi.fn()}
-        onDelete={vi.fn()}
-        onBack={vi.fn()}
-      />,
+      <TaskDetailView task={editingTask} onEdit={vi.fn()} onDelete={vi.fn()} />,
     );
 
     expect(
@@ -382,7 +288,6 @@ describe('TaskDetailView — recurrence info', () => {
         task={recurringTask}
         onEdit={vi.fn()}
         onDelete={vi.fn()}
-        onBack={vi.fn()}
         isRecurring={true}
       />,
     );
@@ -396,7 +301,6 @@ describe('TaskDetailView — recurrence info', () => {
         task={recurringTask}
         onEdit={vi.fn()}
         onDelete={vi.fn()}
-        onBack={vi.fn()}
         isRecurring={true}
         frequencyLabel="Weekly (Mon, Wed)"
       />,
@@ -411,7 +315,6 @@ describe('TaskDetailView — recurrence info', () => {
         task={recurringTask}
         onEdit={vi.fn()}
         onDelete={vi.fn()}
-        onBack={vi.fn()}
       />,
     );
 
@@ -424,7 +327,6 @@ describe('TaskDetailView — recurrence info', () => {
         task={recurringTask}
         onEdit={vi.fn()}
         onDelete={vi.fn()}
-        onBack={vi.fn()}
         isRecurring={true}
       />,
     );

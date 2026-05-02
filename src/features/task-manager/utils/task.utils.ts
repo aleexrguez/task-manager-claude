@@ -115,6 +115,16 @@ export function getExpiredTaskIds(
     .map((t) => t.id);
 }
 
+export function buildDuplicateInput(task: Task): CreateTaskInput {
+  return {
+    title: `${task.title} (copy)`,
+    description: task.description,
+    status: task.status === 'done' ? 'todo' : task.status,
+    priority: task.priority,
+    dueDate: task.dueDate,
+  };
+}
+
 export function filterVisibleTasks(
   tasks: Task[],
   showArchived: boolean,
